@@ -19,7 +19,8 @@ from general_temp_for_harm_and_comp import *
 
 #################################
 #defining unchanging globals
-list_of_companies = ['TikTok', 'Pinterest', 'Snapchat', 'LinkedIn', 'X', 'Facebook', 'Instagram','YouTube','Reddit','Bumble','Threads','WhatsApp Channels','Pornhub','Stripchat']
+list_of_companies = ['TikTok', 'Pinterest', 'Snapchat', 'LinkedIn', 'X', 'Facebook', 'Instagram','YouTube','Reddit','Bumble','Threads','WhatsApp Channels','Pornhub','Stripchat','Tinder','Discord Netherlands B.V.','Campfire','Badoo','Hinge','Badoo']
+#'Uber' not in list
 
 list_of_harms = ['STATEMENT_CATEGORY_ILLEGAL_OR_HARMFUL_SPEECH', 'STATEMENT_CATEGORY_SCOPE_OF_PLATFORM_SERVICE', 'STATEMENT_CATEGORY_PROTECTION_OF_MINORS', 'STATEMENT_CATEGORY_VIOLENCE', 'STATEMENT_CATEGORY_PORNOGRAPHY_OR_SEXUALIZED_CONTENT', 
                         'STATEMENT_CATEGORY_DATA_PROTECTION_AND_PRIVACY_VIOLATIONS', 'STATEMENT_CATEGORY_SCAMS_AND_FRAUD', 'STATEMENT_CATEGORY_SELF_HARM', 
@@ -102,6 +103,8 @@ def load_data_from_dataset(selected_dataset):
     List_of_moderation_action = list(action_dic.keys())
     automation_dic = action_dic[List_of_moderation_action[0]]
     List_of_automation_status = list(automation_dic.keys())
+
+    print(List_of_companies)
     
     #Returning the necessary lists
     return data, List_of_companies, List_of_harms, List_of_content_type, List_of_moderation_action, List_of_automation_status
@@ -162,7 +165,7 @@ def main():
     
 ##############################################################################################################  --- FYI Section --- #########################################################################################################################
 
-    with st.expander("FYI (For Your Information)", expanded=True):
+    with st.expander("When using this dashboard, please consider the following points: ", expanded=True):
         st.markdown("""
             **Please take into consideration:**
 
@@ -183,7 +186,7 @@ def main():
     st.write('<h2 style="text-align: center; text-decoration: underline;">Historical Analysis</h2>', unsafe_allow_html=True)
 
 
-    with st.expander("Click to open Harm definition's according to the DSA documentation", expanded=False):
+    with st.expander("Harm definition's according to the DSA documentation", expanded=False):
     
         question = st.selectbox(
             "Select a Harm",
@@ -226,8 +229,8 @@ def main():
 
 
     selected_option = st.radio(
-        "Choose between to compare two Companies or two Harm's",
-        options=["None", "Two Company comparison", "Two  Harm comparison"],
+        "In this historical analysis you can select one of the following options",
+        options=["Evaluate a certain company or Harm category", "Evaluate two companies for the same harm category", "Evaluate two harm categories for the company"],
         index=0
     )
 
@@ -246,59 +249,69 @@ def main():
     second_company_selected = None
     second_harm_selected = None
 
-    if selected_option == "Two Company comparison":
+    if selected_option == "Evaluate two companies for the same harm category":
         second_harm_selected = None
-        st.write("You selected 'Company'.")
+        #st.write("You selected 'Company'.")
 
 
         date_initial, date_final, company_intial,  second_company, harm_intial = st.columns(5)
 
         with date_initial:
-        #Filter the datasets to only include dates that are less than or equal to the initial date for the initial date input and the same but opposite for final input
             filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
-        # print("DFFII", filtered_dates_for_initial_date_input)
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an inital date:</h4>", unsafe_allow_html=True) 
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
             date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
             
         with date_final:
             filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
-        #  print("FDFFI", filtered_dates_for_final_date_input) 
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a final date:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
             date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
         
         with company_intial:
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a Company:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select Company 01:</h4>", unsafe_allow_html=True)
             company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
 
 
         with second_company:
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a second Company:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select Company 02:</h4>", unsafe_allow_html=True)
             second_company_selected = st.selectbox("Choose a second Company for comparison:",list_of_companies, index=2)
 
         with harm_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Specific Harm:</h4>", unsafe_allow_html=True)
-            harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
+
+           # Create a cleaned version of the harm list (remove prefix and underscores)
+            Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
+            # Create a mapping dictionary to match selections back to the original list
+            harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
+            # Streamlit selectbox with cleaned harm names
+            harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
+            # Map back to the original harm category
+            harm_selected = harm_mapping[harm_selected_cleaned]
+            # Display the selected values for debugging or confirmation
+            #print(f"Selected (Cleaned): {harm_selected_cleaned}")
+           # print(f"Mapped to Original: {harm_selected}")
+
+
+
+           # harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
 
 
 
 
-    elif selected_option == "Two  Harm comparison":
+    elif selected_option == "Evaluate two harm categories for the company":
         second_company_selected = None
-        st.write("You selected 'Harm'.")
+        #st.write("You selected 'Harm'.")
         date_initial, date_final, company_intial, harm_intial, second_harm = st.columns(5)
 
 
         with date_initial:
             #Filter the datasets to only include dates that are less than or equal to the initial date for the initial date input and the same but opposite for final input
             filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
-        # print("DFFII", filtered_dates_for_initial_date_input)
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an inital date:</h4>", unsafe_allow_html=True) 
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
             date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
             
         with date_final:
             filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
-        #  print("FDFFI", filtered_dates_for_final_date_input) 
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a final date:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
             date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
         
         with company_intial:
@@ -306,12 +319,40 @@ def main():
             company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
 
         with harm_intial:
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a Specific Harm:</h4>", unsafe_allow_html=True)
-            harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select Harm 01:</h4>", unsafe_allow_html=True)
+
+            # Create a cleaned version of the harm list (remove prefix and underscores)
+            Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
+            # Create a mapping dictionary to match selections back to the original list
+            harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
+            # Streamlit selectbox with cleaned harm names
+            harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
+            # Map back to the original harm category
+            harm_selected = harm_mapping[harm_selected_cleaned]
+            # Display the selected values for debugging or confirmation
+            #print(f"Selected (Cleaned): {harm_selected_cleaned}")
+           # print(f"Mapped to Original: {harm_selected}")
+
+            #harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
 
         with second_harm:
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a second Harm:</h4>", unsafe_allow_html=True)
-            second_harm_selected = st.selectbox("Choose a second Harm for comparison:",list_of_harms,index=2)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select Harm 02:</h4>", unsafe_allow_html=True)
+
+
+            # Create a cleaned version of the harm list (remove prefix and underscores)
+            Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
+            # Create a mapping dictionary to match selections back to the original list
+            harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
+            # Streamlit selectbox with cleaned harm names
+            harm_selected_cleaned = st.selectbox("Choose a second Harm from the dropdown below:", Cleaned_harms,index=2)
+            # Map back to the original harm category
+            second_harm_selected = harm_mapping[harm_selected_cleaned]
+            # Display the selected values for debugging or confirmation
+            print(f"Selected (Cleaned): {harm_selected_cleaned}")
+            print(f"Mapped to Original: {second_harm_selected}")
+
+
+           # second_harm_selected = st.selectbox("Choose a second Harm for comparison:",list_of_harms,index=2)
 
         
     else:
@@ -323,13 +364,13 @@ def main():
             #Filter the datasets to only include dates that are less than or equal to the initial date for the initial date input and the same but opposite for final input
             filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
         # print("DFFII", filtered_dates_for_initial_date_input)
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an inital date:</h4>", unsafe_allow_html=True) 
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
             date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
             
         with date_final:
             filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
         #  print("FDFFI", filtered_dates_for_final_date_input) 
-            st.markdown("<h4 style=' text-decoration: underline;'>Select a final date:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
             date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
         
         with company_intial:
@@ -338,7 +379,21 @@ def main():
 
         with harm_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Specific Harm:</h4>", unsafe_allow_html=True)
-            harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
+
+            # Create a cleaned version of the harm list (remove prefix and underscores)
+            Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
+            # Create a mapping dictionary to match selections back to the original list
+            harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
+            # Streamlit selectbox with cleaned harm names
+            harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
+            # Map back to the original harm category
+            harm_selected = harm_mapping[harm_selected_cleaned]
+            # Display the selected values for debugging or confirmation
+            print(f"Selected (Cleaned): {harm_selected_cleaned}")
+            print(f"Mapped to Original: {harm_selected}")
+
+            
+            #harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
 
         
 
@@ -384,9 +439,9 @@ def main():
             results = list(executor.map(process_data, datasets_loaded))
             results2 = list(executor.map(process_data, datasets_loaded2))
 
-            print("results for first company ", results)
-            print("results2 for first company", results2)
-            print("---")
+            # print("results for first company ", results)
+            # print("results2 for first company", results2)
+            # print("---")
 
 
          #-------------------------------------
@@ -399,8 +454,8 @@ def main():
             results_second_company_selected = list(executor.map(process_data_second, datasets_loaded))
             results2_second_company_selected = list(executor.map(process_data_second, datasets_loaded2))
 
-            print("results_second_company_selected", results_second_company_selected)
-            print("results2_second_company_selected", results2_second_company_selected)
+            # print("results_second_company_selected", results_second_company_selected)
+            # print("results2_second_company_selected", results2_second_company_selected)
 
 
 
@@ -520,8 +575,7 @@ def main():
         )
 
         chart_two = (bars + text).properties(
-            width=300,
-            title='Comparison of Total Harm Count by Category and Company'
+            width=300
         )
 
 
@@ -655,16 +709,16 @@ def main():
 
 
         #second chart
-        acc_total_1 = df_company_1['Automated'].sum()
-        user_total_1 = df_company_1['Manual'].sum()
+        acc_total_1_harm = df_company_1['Automated'].sum()
+        user_total_1_harm = df_company_1['Manual'].sum()
 
-        acc_total_2 = df_company_2['Automated'].sum()
-        user_total_2 = df_company_2['Manual'].sum()
+        acc_total_2_harm= df_company_2['Automated'].sum()
+        user_total_2_harm = df_company_2['Manual'].sum()
 
         # Create a DataFrame with the totals for both companies
         data_totals = {
             'Category': ['Automated', 'Manual', 'Automated', 'Manual'],
-            'Total Harm Count': [acc_total_1, user_total_1, acc_total_2, user_total_2],
+            'Total Harm Count': [acc_total_1_harm, user_total_1_harm, acc_total_2_harm, user_total_2_harm],
             'Harm': [harm_selected_label, harm_selected_label, second_harm_selected_label, second_harm_selected_label]
         }
 
@@ -690,8 +744,7 @@ def main():
         )
 
         chart_two = (bars + text).properties(
-            width=300,
-            title='Comparison of Total Harm Count by Category and Harm'
+            width=300
         )
 
 
@@ -812,6 +865,8 @@ def main():
             title='ACC Flag count vs User Flag count'
         )
 
+
+
         #graph2
         acc_total = df['Automated'].sum()
         user_total = df["Manual"].sum()
@@ -820,11 +875,15 @@ def main():
         df_xx = pd.DataFrame(data_a)
         color_scale = alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])
         # Create an Altair bar chart
+        # Create an Altair bar chart with a title
+        
         chart_two = alt.Chart(df_xx).mark_bar().encode(
-            x=alt.X('Category:N', title=''),
-            y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
-            color=alt.Color('Category:N', scale=color_scale, legend=None)).properties(width=alt.Step(80))
-
+        x=alt.X('Category:N', title=''),
+        y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
+        color=alt.Color('Category:N', scale=color_scale, legend=None)
+    ).properties(
+        width=alt.Step(80)
+    )
 
 
         #graph3 one company
@@ -870,11 +929,16 @@ def main():
         data_a = {'Category': ['Automated', 'Manual'],'Total Harm Count': [int(acc_total4), int(user_total4)]}
         df_xx = pd.DataFrame(data_a)
         color_scale = alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])
+        # Create an Altair bar chart with a title
         chart_four = alt.Chart(df_xx).mark_bar().encode(
             x=alt.X('Category:N', title=''),
-            y=alt.Y('Total Harm Count:Q', title='AVERAGE  MODERATION TIME (HRS)'),
-            color=alt.Color('Category:N', scale=color_scale, legend=None)).properties(width=alt.Step(80))
-    
+            y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),
+            color=alt.Color('Category:N', scale=color_scale, legend=None)
+        ).properties(
+            width=alt.Step(80),
+            title="Average Moderation Time: Automated vs. Manual"
+        )
+            
 
         
 
@@ -887,13 +951,101 @@ def main():
         st.altair_chart(chart, use_container_width=True)
 
     with col2:
-        st.altair_chart(chart_two, use_container_width=True)
+
+        
+       try:
+            # Try using acc_total and user_total
+            formatted_number1 = format(int(acc_total), ",")
+            formatted_number2 = format(int(user_total), ",")
+            
+            st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated</span> (ACC): {formatted_number1} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> (User reported): {formatted_number2}",
+                unsafe_allow_html=True
+            )
+
+            st.altair_chart(chart_two, use_container_width=True)
+
+       except NameError:
+            try:
+                # If acc_total doesn't exist, use acc_total_1 and acc_total_2
+                formatted_number1 = format(int(acc_total_1), ",")
+                formatted_number2 = format(int(user_total_1), ",")
+                formatted_number3 = format(int(acc_total_2), ",")
+                formatted_number4 = format(int(user_total_2), ",")
+
+                st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({company_selected}): {formatted_number1} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({company_selected}): {formatted_number2} || "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_company_selected}): {formatted_number3} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_company_selected}): {formatted_number4}",
+                unsafe_allow_html=True
+            )
+
+            except NameError:
+                # If acc_total_1 doesn't exist, use acc_total_1_harm and user_total_1_harm
+                formatted_number1 = format(int(acc_total_1_harm), ",")
+                formatted_number2 = format(int(user_total_1_harm), ",")
+                formatted_number3 = format(int(acc_total_2_harm), ",")
+                formatted_number4 = format(int(user_total_2_harm), ",")
+
+                st.write(
+                f"<span style='font-size:14px;'>"
+                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected_label}): {formatted_number1} ┃ "
+                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected_label}): {formatted_number2} | "
+                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected_label}): {formatted_number3} ┃ "
+                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected_label}): {formatted_number4}",
+                    f"</span>",
+                    unsafe_allow_html=True
+                )
+
+        # Display the chart
+            st.altair_chart(chart_two, use_container_width=True)
+
+
+
+
+
     
     with col1:
         st.altair_chart(chart_three, use_container_width=True)
 
     with col2:
-        st.altair_chart(chart_four, use_container_width=True)
+           # Display the chart
+        if acc_total4 > 24 and user_total4 > 24:
+            formatted_number1 = format(int(acc_total4/24), ",")
+            formatted_number2 = format(int(user_total4/24), ",")
+            st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
+                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
+                unsafe_allow_html=True)
+            st.altair_chart(chart_four, use_container_width=True)
+        elif acc_total4 < 24 and user_total4 > 24:
+            formatted_number1 = format(int(acc_total4), ",")
+            formatted_number2 = format(int(user_total4/24), ",")
+            st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
+                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
+                unsafe_allow_html=True)
+            st.altair_chart(chart_four, use_container_width=True)
+        elif acc_total4 > 24 and user_total4 < 24:
+            formatted_number1 = format(int(acc_total4/24), ",")
+            formatted_number2 = format(int(user_total4), ",")
+            st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
+                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
+                unsafe_allow_html=True)
+            st.altair_chart(chart_four, use_container_width=True)
+        else:
+            formatted_number1 = format(int(acc_total4), ",")
+            formatted_number2 = format(int(user_total4), ",")
+            st.write(
+                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
+                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
+                unsafe_allow_html=True)
+            st.altair_chart(chart_four, use_container_width=True)
+
+        #st.altair_chart(chart_four, use_container_width=True)
             
     st.markdown("---")
 
