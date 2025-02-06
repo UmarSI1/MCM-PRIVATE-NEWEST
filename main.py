@@ -104,7 +104,7 @@ def load_data_from_dataset(selected_dataset):
     automation_dic = action_dic[List_of_moderation_action[0]]
     List_of_automation_status = list(automation_dic.keys())
 
-    print(List_of_companies)
+    #(List_of_companies)
     
     #Returning the necessary lists
     return data, List_of_companies, List_of_harms, List_of_content_type, List_of_moderation_action, List_of_automation_status
@@ -348,8 +348,8 @@ def main():
             # Map back to the original harm category
             second_harm_selected = harm_mapping[harm_selected_cleaned]
             # Display the selected values for debugging or confirmation
-            print(f"Selected (Cleaned): {harm_selected_cleaned}")
-            print(f"Mapped to Original: {second_harm_selected}")
+           # print(f"Selected (Cleaned): {harm_selected_cleaned}")
+           # print(f"Mapped to Original: {second_harm_selected}")
 
 
            # second_harm_selected = st.selectbox("Choose a second Harm for comparison:",list_of_harms,index=2)
@@ -389,8 +389,8 @@ def main():
             # Map back to the original harm category
             harm_selected = harm_mapping[harm_selected_cleaned]
             # Display the selected values for debugging or confirmation
-            print(f"Selected (Cleaned): {harm_selected_cleaned}")
-            print(f"Mapped to Original: {harm_selected}")
+           # print(f"Selected (Cleaned): {harm_selected_cleaned}")
+           # print(f"Mapped to Original: {harm_selected}")
 
             
             #harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
@@ -472,9 +472,9 @@ def main():
             results = list(executor.map(process_data, datasets_loaded))
             results2 = list(executor.map(process_data, datasets_loaded2))
 
-            print("results for first company ", results)
-            print("results2 for first company", results2)
-            print("---")
+          #  print("results for first company ", results)
+          #  print("results2 for first company", results2)
+          #  print("---")
 
 
          #-------------------------------------
@@ -487,8 +487,8 @@ def main():
             results_second_harm_selected = list(executor.map(process_data_second, datasets_loaded))
             results2_second_harm_selected = list(executor.map(process_data_second, datasets_loaded2))
 
-            print("results_second_harm_selected", results_second_harm_selected)
-            print("results2_second_harm_selected", results2_second_harm_selected)
+          #  print("results_second_harm_selected", results_second_harm_selected)
+           # print("results2_second_harm_selected", results2_second_harm_selected)
 
 
 
@@ -622,8 +622,13 @@ def main():
 
 
 
-
+        
         #graph4
+        #fix the values not correct (think), alyout is working
+        # ---------------------------------------------------------------------------------------------------
+
+        # Calculate the average for each category and company
+
         df_company_1 = pd.DataFrame({
         'Dates': all_dates_between_initial_final_dates,
         'Automated': [result[0] for result in results],
@@ -639,35 +644,49 @@ def main():
 
         })
 
-        df_combined = pd.concat([df_company_1.melt(['Dates', 'Company'], var_name='Type', value_name='DAILY FLAGGED CONTENT'),
-                                df_company_2.melt(['Dates', 'Company'], var_name='Type', value_name='DAILY FLAGGED CONTENT')])
 
-        # Calculate the average for each category and company
         acc_total4 = df_company_1[['Automated']].mean().iloc[0]
         user_total4 = df_company_1[['Manual']].mean().iloc[0]
 
         acc_total4_second = df_company_2[['Automated']].mean().iloc[0]
         user_total4_second = df_company_2[['Manual']].mean().iloc[0]
 
-        # Prepare the DataFrame for the bar chart
-        df_bar = pd.DataFrame({
+
+
+       # Create DataFrame with the totals for both companies
+        df_totals = pd.DataFrame({
             'Category': ['Automated', 'Manual', 'Automated', 'Manual'],
             'Total Harm Count': [acc_total4, user_total4, acc_total4_second, user_total4_second],
             'Company': [company_selected, company_selected, second_company_selected, second_company_selected]
         })
 
-        # Create the bar chart
+        #print("df total 2 companies graph4", df_totals)
+
+        # Define color scale for Automated vs Manual
         color_scale = alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])
 
-        chart_four = alt.Chart(df_bar).mark_bar().encode(
-            x=alt.X('Company:N', title='Company', axis=alt.Axis(labelAngle=0)),
-            y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),
-            color=alt.Color('Category:N', scale=color_scale),
-            tooltip=['Category', 'Total Harm Count', 'Company']
-        ).properties(
-            title='Comparison of Average Moderation Time by Company and Category',
-            width=200
+        # Create a grouped bar chart
+        bars = alt.Chart(df_totals).mark_bar().encode(
+            x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),  # Categories (Automated, Manual)
+            y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),  # Total harm count on Y-axis
+            color=alt.Color('Category:N', scale=color_scale, legend=None),  # Color by Automated/Manual
+            xOffset='Company:N'  # Offset bars by Company (ensures grouping)
         )
+
+        # Add text labels above the bars showing company names
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12).encode(
+            x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
+            y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
+            text=alt.Text('Company:N'),  # Display company name
+            xOffset='Company:N'  # Align text with corresponding bars
+        )
+
+        # Combine bars and text
+        chart_four = (bars + text).properties(
+            width=300
+        )
+                
+        # ---------------------------------------------------------------------------------------------------
 
 
 
@@ -795,6 +814,7 @@ def main():
         #graph4
 
         # Calculate averages for one company
+        #working layout not just need to fix values
 
         df_company_1 = pd.DataFrame({
         'Dates': all_dates_between_initial_final_dates,
@@ -820,26 +840,25 @@ def main():
         acc_total4_second = df_company_2[['Automated']].mean().iloc[0]
         user_total4_second = df_company_2[['Manual']].mean().iloc[0]
 
-        # Prepare the DataFrame for the bar chart
+        # Create the DataFrame for visualization
         df_bar = pd.DataFrame({
             'Category': ['Automated', 'Manual', 'Automated', 'Manual'],
             'Total Harm Count': [acc_total4, user_total4, acc_total4_second, user_total4_second],
             'Harm': [harm_selected_label, harm_selected_label, second_harm_selected_label, second_harm_selected_label]
         })
 
-        # Create the bar chart
+        # Define color scale
         color_scale = alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])
 
-        
-
+        # Create grouped bar chart (Harm as main category, with separate Automated & Manual bars)
         chart_four = alt.Chart(df_bar).mark_bar().encode(
-            x=alt.X('Harm:N', title='Harm', axis=alt.Axis(labelAngle=0)),
-            y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),
-            color=alt.Color('Category:N', scale=color_scale),
+            x=alt.X('Harm:N', title='Harm Type', axis=alt.Axis(labelAngle=0)),  # Harm types on x-axis
+            y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),  # Moderation time on y-axis
+            color=alt.Color('Category:N', scale=color_scale, legend=alt.Legend(title="Moderation Type")),  # Color for Automated & Manual
+            xOffset='Category:N',  # Offsets bars to group by Harm
             tooltip=['Category', 'Total Harm Count', 'Harm']
         ).properties(
-            title='Comparison of Average Moderation Time by Harm and Category',
-            width=200
+            width=300
         )
 
     #graph creation for default (none)
@@ -913,8 +932,8 @@ def main():
             strokeDash='Type').properties(
             title='ACC VS Manual Moderation Time (Detection + Decision Periods)')
 
-
-
+       #grph 4 values showing correct
+       # ---------------------------------------------------------------------------------------------------
         #graph4
         acc_total4 = df_three['Automated'][df_three['Automated'] != 0].mean()
         user_total4 = df_three['Manual'][df_three['Manual'] != 0].mean()
@@ -935,8 +954,7 @@ def main():
             y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),
             color=alt.Color('Category:N', scale=color_scale, legend=None)
         ).properties(
-            width=alt.Step(80),
-            title="Average Moderation Time: Automated vs. Manual"
+            width=alt.Step(80)
         )
             
 
@@ -1011,43 +1029,97 @@ def main():
         st.altair_chart(chart_three, use_container_width=True)
 
     with col2:
-           # Display the chart
-        if acc_total4 > 24 and user_total4 > 24:
-            formatted_number1 = format(int(acc_total4/24), ",")
-            formatted_number2 = format(int(user_total4/24), ",")
+
+        #fix try expect to trigger correctly
+        try:
+            # Two companies working
+            if not company_selected or not second_company_selected:
+                print("two companies selected")
+                raise NameError("Company selection is not valid.")
+            
             st.write(
-                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
-                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
-                unsafe_allow_html=True)
-            st.altair_chart(chart_four, use_container_width=True)
-        elif acc_total4 < 24 and user_total4 > 24:
-            formatted_number1 = format(int(acc_total4), ",")
-            formatted_number2 = format(int(user_total4/24), ",")
-            st.write(
-                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
-                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
-                unsafe_allow_html=True)
-            st.altair_chart(chart_four, use_container_width=True)
-        elif acc_total4 > 24 and user_total4 < 24:
-            formatted_number1 = format(int(acc_total4/24), ",")
-            formatted_number2 = format(int(user_total4), ",")
-            st.write(
-                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
-                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
-                unsafe_allow_html=True)
-            st.altair_chart(chart_four, use_container_width=True)
-        else:
-            formatted_number1 = format(int(acc_total4), ",")
-            formatted_number2 = format(int(user_total4), ",")
-            st.write(
-                f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
-                f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
-                unsafe_allow_html=True)
-            st.altair_chart(chart_four, use_container_width=True)
+                f"<span style='font-size:14px;'>"
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({company_selected}): {acc_total4:.0f} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({company_selected}): {user_total4:.0f} ┃ "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_company_selected}): {acc_total4_second:.0f} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_company_selected}): {user_total4_second:.0f} "
+                f"</span>",
+                unsafe_allow_html=True
+            )
+        except NameError:
+            try:
+                # Two harms working
+                print("two harms selected")
+                if not harm_selected or not second_harm_selected:
+                    raise NameError("Harm selection is not valid.")
+                
+                st.write(
+                    f"<span style='font-size:14px;'>"
+                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected}): {acc_total4:.0f} ┃ "
+                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected}): {user_total4:.0f} ┃ "
+                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected}): {acc_total4_second:.0f} ┃ "
+                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected}): {user_total4_second:.0f} "
+                    f"</span>",
+                    unsafe_allow_html=True
+                )
+            except NameError:
+                print("else")
+                try:
+                    harm_version = category_descriptions.get(harm_selected, "UNKNOWN HARM")
+                    
+                    # One company and one harm working
+                    st.write(
+                        f"<span style='font-size:14px;'>"
+                        f"<span style='color:red; font-weight:bold;'>Automated Results: </span> {acc_total4:.0f} ┃ "
+                        f"<span style='color:green; font-weight:bold;'>Manual Results:</span> {user_total4:.0f} ┃ "
+                        f"<span style='color:green; font-weight:bold;'>For:</span> {company_selected} & {harm_version}"
+                        f"</span>",
+                        unsafe_allow_html=True
+                    )
+                except NameError:
+                    st.write("Error: No valid company or harm data available.")
+
+        st.altair_chart(chart_four, use_container_width=True)
+
+
+
+        #    # Display the chart
+        # if acc_total4 > 24 and user_total4 > 24:
+        #     formatted_number1 = format(int(acc_total4/24), ",")
+        #     formatted_number2 = format(int(user_total4/24), ",")
+        #     st.write(
+        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
+        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
+        #         unsafe_allow_html=True)
+        #     st.altair_chart(chart_four, use_container_width=True)
+        # elif acc_total4 < 24 and user_total4 > 24:
+        #     formatted_number1 = format(int(acc_total4), ",")
+        #     formatted_number2 = format(int(user_total4/24), ",")
+        #     st.write(
+        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
+        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
+        #         unsafe_allow_html=True)
+        #     st.altair_chart(chart_four, use_container_width=True)
+        # elif acc_total4 > 24 and user_total4 < 24:
+        #     formatted_number1 = format(int(acc_total4/24), ",")
+        #     formatted_number2 = format(int(user_total4), ",")
+        #     st.write(
+        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
+        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
+        #         unsafe_allow_html=True)
+        #     st.altair_chart(chart_four, use_container_width=True)
+        # else:
+        #     formatted_number1 = format(int(acc_total4), ",")
+        #     formatted_number2 = format(int(user_total4), ",")
+        #     st.write(
+        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
+        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
+        #         unsafe_allow_html=True)
+        #     st.altair_chart(chart_four, use_container_width=True)
 
         #st.altair_chart(chart_four, use_container_width=True)
             
-    st.markdown("---")
+    #st.markdown("---")
 
     
 
@@ -1146,7 +1218,7 @@ def main():
         fig25 = sum_reports_per_moderation_action_per_company(data)
 
         with col1:
-            with st.expander("Total ACC detections per moderation action", expanded=False):
+            with st.expander("Analysis of Moderation Actions vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig3, use_container_width=True)
 
                 csv = fig3.to_csv(index=False)
@@ -1159,70 +1231,70 @@ def main():
                     mime='text/csv',
                 )
         with col2:
-            with st.expander("Total ACC detections per automation decision status", expanded=False):
+            with st.expander("Analysis of Type of Moderation vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig4, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per content type", expanded=False):
+            with st.expander("Analysis of Content Type vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig5, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per company", expanded=False):
+            with st.expander("Analysis of Company vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig1, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig2, use_container_width=True)
         with col2:
-            with st.expander("Total count for manual vs automated detection", expanded=False):
+            with st.expander("Total Moderated Content per Detection Type (User vs. Automated)", expanded=False):
                 st.dataframe(fig6, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation actions per harm", expanded=False):
+            with st.expander("Total Moderated Content per Harm Category", expanded=False):
                 st.dataframe(fig7, use_container_width=True)
         with col2:
-            with st.expander("Total number of Moderation Actions per Company", expanded=False):
+            with st.expander("Total Moderated Content per Company", expanded=False):
                 st.dataframe(fig8, use_container_width=True)          
         with col1:
-            with st.expander("Total number of Moderation Actions per Company Normalized", expanded=False):
+            with st.expander("Total Moderated Content per Company", expanded=False):
                 st.dataframe(fig9, use_container_width=True)     
         with col2:
-            with st.expander("Total number of Moderation Actions per Type of Content", expanded=False):
+            with st.expander("Total Moderated Content per Type of Content", expanded=False):
                 st.dataframe(fig10, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Type of Automation Status", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation", expanded=False):
                 st.dataframe(fig12, use_container_width=True)
         with col2:
-            with st.expander("Total number of Moderation Actions per Type of Moderation Decision", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation Action", expanded=False):
                 st.dataframe(fig11, use_container_width=True)
         with col1:
-            with st.expander("Number of reported Harms per Company", expanded=False):
+            with st.expander(" Analysis of Harm Category vs. Company", expanded=False):
                 st.dataframe(fig13, use_container_width=True)
         with col2:
-            with st.expander("Number of reported content type per Company", expanded=False):
+            with st.expander("Analysis of Company vs. Type of Content Moderated", expanded=False):
                 st.dataframe(fig14, use_container_width=True)
         with col1:
-            with st.expander("Normalized counts of each automation status per company", expanded=False):
+            with st.expander("Analysis of Company vs. Type of Moderation Adopted", expanded=False):
                 st.dataframe(fig16, use_container_width=True)
         with col2:
-            with st.expander("Number of reported content type per Harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Content Moderated", expanded=False):
                 st.dataframe(fig17, use_container_width=True)
         with col1:
-            with st.expander("Number of reported content type per Harm Normalized", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Moderated Content Type", expanded=False):
                 st.dataframe(fig18, use_container_width=True)               
         with col2:
-            with st.expander("Count for each harm per automation status", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig19, use_container_width=True)
         with col1:
-            with st.expander("Count for each harm per automation status normalized", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation (%)", expanded=False):
                 st.dataframe(fig20, use_container_width=True)
         with col2:
-            with st.expander("Count of each Harm per Moderation decision", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation Action", expanded=False):
                 st.dataframe(fig23, use_container_width=True)
         with col1:
-            with st.expander("Count for each content type per automation status", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted", expanded=False):
                 st.dataframe(fig21, use_container_width=True)
         with col2:
-            with st.expander("Count for each content type per automation status Normalized", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted Normalized", expanded=False):
                 st.dataframe(fig22, use_container_width=True)
         with col1:
-            with st.expander("Number of reported moderation decision per company", expanded=False):
+            with st.expander("Analysis of Company vs. Moderation Actions Adopted", expanded=False):
                 st.dataframe(fig25, use_container_width=True)
                 
     ########################################################################################################
@@ -1261,22 +1333,22 @@ def main():
         fig24 = sum_reports_per_moderation_action_per_company3(data, selected_company, selected_harm)
 
         with col1:
-            with st.expander("Total ACC detections per moderation action", expanded=False):
+            with st.expander("Analysis of Moderation Actions vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig3, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per automation decision status", expanded=False):
+            with st.expander("Analysis of Type of Moderation vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig4, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per content type", expanded=False):
+            with st.expander("Analysis of Content Type vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig5, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per company", expanded=False):
+            with st.expander("Analysis of Company vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig1, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig2, use_container_width=True)
         with col2:
-            with st.expander("Total count for manual vs automated detection", expanded=False):
+            with st.expander("Total Moderated Content per Detection Type (User vs. Automated)", expanded=False):
                 st.dataframe(fig6, use_container_width=True)
         with col1:
             with st.expander("Total number of Moderation actions for selected harm and company", expanded=False):
@@ -1285,13 +1357,13 @@ def main():
             with st.expander("Total number of Moderation Actions normalized for selected harm and company", expanded=False):
                 st.dataframe(fig9, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Type of Content for selected harm and company", expanded=False):
+            with st.expander("Total Moderated Content per Type of Content for selected harm and company", expanded=False):
                 st.dataframe(fig10, use_container_width=True)
         with col2:
             with st.expander("Total number of Moderation Actions per Type of moderation action for selected harm and company", expanded=False):
                 st.dataframe(fig11, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Type of Moderation Decision for selected harm and company", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation Action for selected harm and company", expanded=False):
                 st.dataframe(fig12, use_container_width=True)
         with col2:
             with st.expander("Number of reported Harms for selected harm and company", expanded=False):
@@ -1309,13 +1381,13 @@ def main():
             #with st.expander("Number of reported content type normalized for selected harm and company", expanded=False):
                 #st.dataframe(fig17, use_container_width=True)
         with col2:
-            with st.expander("Count for each harm per automation status normalized for selected harm and company", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation (%) for selected harm and company", expanded=False):
                 st.dataframe(fig20, use_container_width=True)
         with col1:
-            with st.expander("Count for each content type per automation status for selected harm and company", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted for selected harm and company", expanded=False):
                 st.dataframe(fig21, use_container_width=True)
         with col2:
-            with st.expander("Count for each content type per automation status normalized for selected harm and company", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted normalized for selected harm and company", expanded=False):
                 st.dataframe(fig22, use_container_width=True)
         with col1:
             with st.expander("Count of moderation decision per automation status for selected harm and company", expanded=False):
@@ -1358,49 +1430,49 @@ def main():
 
 
         with col1:
-            with st.expander("Total ACC detections per moderation action", expanded=False):
+            with st.expander("Analysis of Moderation Actions vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig3, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per automation decision status", expanded=False):
+            with st.expander("Analysis of Type of Moderation vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig4, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per content type", expanded=False):
+            with st.expander("Analysis of Content Type vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig5, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per company", expanded=False):
+            with st.expander("Analysis of Company vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig1, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig2, use_container_width=True)
         with col2:
-            with st.expander("Total count for manual vs automated detection", expanded=False):
+            with st.expander("Total Moderated Content per Detection Type (User vs. Automated)", expanded=False):
                 st.dataframe(fig6, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation actions per harm", expanded=False):
+            with st.expander("Total Moderated Content per Harm Category", expanded=False):
                 st.dataframe(fig7, use_container_width=True)
         with col2:
-            with st.expander("Total number of Moderation Actions per Type of Automation Status", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation", expanded=False):
                 st.dataframe(fig12, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Company", expanded=False):
+            with st.expander("Total Moderated Content per Company", expanded=False):
                 st.dataframe(fig8, use_container_width=True)
         with col2:
-            with st.expander("Total number of Moderation Actions per Company normalized", expanded=False):
+            with st.expander("Total Moderated Content per Company", expanded=False):
                 st.dataframe(fig9, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Type of Moderation Decision", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation Action", expanded=False):
                 st.dataframe(fig11, use_container_width=True)
         with col2:
-            with st.expander("Number of reported Harms per Company", expanded=False):
+            with st.expander(" Analysis of Harm Category vs. Company", expanded=False):
                 st.dataframe(fig13, use_container_width=True)
         with col1:
-            with st.expander("Number of reported content type per Company", expanded=False):
+            with st.expander("Analysis of Company vs. Type of Content Moderated", expanded=False):
                 st.dataframe(fig14, use_container_width=True)
         with col2:
             with st.expander("Number of Automation Status type per Company", expanded=False):
                 st.dataframe(fig15, use_container_width=True)
         with col1:
-            with st.expander("Normalized counts of each automation status per company", expanded=False):
+            with st.expander("Analysis of Company vs. Type of Moderation Adopted", expanded=False):
                 st.dataframe(fig16, use_container_width=True)
         with col2:
             with st.expander("Count for each harm per content type", expanded=False):
@@ -1409,22 +1481,22 @@ def main():
             with st.expander("Count for each harm per content type Normalized", expanded=False):
                 st.dataframe(fig18, use_container_width=True)
         with col2:
-            with st.expander("Count for each harm per automation status", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig19, use_container_width=True)
         with col1:
-            with st.expander("Count for each harm per automation status normalized", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation (%)", expanded=False):
                 st.dataframe(fig20, use_container_width=True)
         with col2:
-            with st.expander("Count for each content type per automation status", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted", expanded=False):
                 st.dataframe(fig21, use_container_width=True)
         with col1:
-            with st.expander("Count for each content type per automation status Normalized", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted Normalized", expanded=False):
                 st.dataframe(fig22, use_container_width=True)
         with col2:
             with st.expander("Count of moderation decision per automation status", expanded=False):
                 st.dataframe(fig23, use_container_width=True)
         #with col1:
-          #  with st.expander("Number of reported moderation decision per company", expanded=False):
+          #  with st.expander("Analysis of Company vs. Moderation Actions Adopted", expanded=False):
                # st.dataframe(fig24, use_container_width=True)
     ########################################################################################################
 
@@ -1455,58 +1527,58 @@ def main():
         fig19 = generate_moderation_action_automation_status_figure2(data, selected_harm)
 
         with col1:
-            with st.expander("Total ACC detections per moderation action", expanded=False):
+            with st.expander("Analysis of Moderation Actions vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig3, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per automation decision status", expanded=False):
+            with st.expander("Analysis of Type of Moderation vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig4, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per content type", expanded=False):
+            with st.expander("Analysis of Content Type vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig5, use_container_width=True)
         with col2:
-            with st.expander("Total ACC detections per company", expanded=False):
+            with st.expander("Analysis of Company vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig1, use_container_width=True)
         with col1:
-            with st.expander("Total ACC detections per harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Number of Automated or User Flags", expanded=False):
                 st.dataframe(fig2, use_container_width=True)
         with col2:
-            with st.expander("Total count for manual vs automated detection", expanded=False):
+            with st.expander("Total Moderated Content per Detection Type (User vs. Automated)", expanded=False):
                 st.dataframe(fig6, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation actions per harm", expanded=False):
+            with st.expander("Total Moderated Content per Harm Category", expanded=False):
                 st.dataframe(fig7, use_container_width=True)
         with col2:
-            with st.expander("Total number of Moderation Actions per Type of Content for harm", expanded=False):
+            with st.expander("Total Moderated Content per Type of Content for harm", expanded=False):
                 st.dataframe(fig8, use_container_width=True)
         with col1:
-            with st.expander("Total number of Moderation Actions per Type of Automation Status for harm", expanded=False):
+            with st.expander("Total Moderated Content per Type of Moderation for harm", expanded=False):
                 st.dataframe(fig9, use_container_width=True)
         with col2:
             with st.expander("Total number of Automation status for harm", expanded=False):
                 st.dataframe(fig10, use_container_width=True)
         with col1:
-            with st.expander("Number of reported Harms per Company for harm", expanded=False):
+            with st.expander(" Analysis of Harm Category vs. Company for harm", expanded=False):
                 st.dataframe(fig11, use_container_width=True)
         with col2:
             with st.expander("Number of Automation Status type per Company for harm", expanded=False):
                 st.dataframe(fig12, use_container_width=True)
         with col1:
-            with st.expander("Normalized counts of each automation status per company for harm", expanded=False):
+            with st.expander("Analysis of Company vs. Type of Moderation Adopted for harm", expanded=False):
                 st.dataframe(fig13, use_container_width=True)
         with col2:
-            with st.expander("Number of reported content type per Harm Normalized for harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Moderated Content Type for harm", expanded=False):
                 st.dataframe(fig14, use_container_width=True)
         with col1:
-            with st.expander("Count for each harm per automation status for harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation for harm", expanded=False):
                 st.dataframe(fig15, use_container_width=True)
         with col2:
-            with st.expander("Count for each harm per automation status normalized for harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation (%) for harm", expanded=False):
                 st.dataframe(fig16, use_container_width=True)
         with col1:
-            with st.expander("Count for each content type per automation status for harm", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted for harm", expanded=False):
                 st.dataframe(fig17, use_container_width=True)
         with col2:
-            with st.expander("Count for each content type per automation status normalized for harm", expanded=False):
+            with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted normalized for harm", expanded=False):
                 st.dataframe(fig18, use_container_width=True)
         with col1:
             with st.expander("Count of moderation decision per automation status for harm", expanded=False):
