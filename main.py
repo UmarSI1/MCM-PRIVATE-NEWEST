@@ -633,28 +633,28 @@ def main():
 
         # Calculate the average for each category and company
 
-        df_company_1 = pd.DataFrame({
-        'Dates': all_dates_between_initial_final_dates,
-        'Automated': [result[0] for result in results],
-        'Manual': [result[1] for result in results],
-        'Company': company_selected
-        })
+        # df_company_1 = pd.DataFrame({
+        # 'Dates': all_dates_between_initial_final_dates,
+        # 'Automated': [result[0] for result in results],
+        # 'Manual': [result[1] for result in results],
+        # 'Company': company_selected
+        # })
 
-        df_company_2 = pd.DataFrame({
-            'Dates': all_dates_between_initial_final_dates,
-            'Automated': [result[0] for result in results_second_company_selected],
-            'Manual': [result[1] for result in results_second_company_selected],
-            'Company': second_company_selected
+        # df_company_2 = pd.DataFrame({
+        #     'Dates': all_dates_between_initial_final_dates,
+        #     'Automated': [result[0] for result in results_second_company_selected],
+        #     'Manual': [result[1] for result in results_second_company_selected],
+        #     'Company': second_company_selected
 
 
-        })
+        # })
 
         # Process Data: Compute average moderation time (in hours) per category for both companies
-        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean() / 60
-        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean() / 60
+        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
+        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean()
 
-        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean() / 60
-        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean() / 60
+        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean()
+        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean()
 
 
         # Create DataFrame with the totals for both companies
@@ -818,26 +818,13 @@ def main():
         # Calculate averages for one company
         #working layout not just need to fix values
 
-        df_company_1 = pd.DataFrame({
-        'Dates': all_dates_between_initial_final_dates,
-        'Automated': [result[0] for result in results],
-        'Manual': [result[1] for result in results],
-        'Harm': harm_selected
-        })
-
-        df_company_2 = pd.DataFrame({
-            'Dates': all_dates_between_initial_final_dates,
-            'Automated': [result[0] for result in results_second_harm_selected],
-            'Manual': [result[1] for result in results_second_harm_selected],
-            'Harm': second_harm_selected
-        })
 
         # Process Data: Compute average moderation time (in hours) for both harms
-        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean() / 60
-        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean() / 60
+        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
+        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean()
 
-        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean() / 60
-        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean() / 60
+        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean()
+        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean()
 
         # Handle NaN cases (replace with 0 if no data available)
         acc_total4 = 0 if pd.isna(acc_total4) else acc_total4
