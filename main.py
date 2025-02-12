@@ -853,7 +853,7 @@ def main():
             width=300
         )
 
-        chart_four
+
 
 
     #graph creation for default (none)
