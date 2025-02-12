@@ -428,7 +428,9 @@ def main():
     # Process the loaded data above
 
     #if two companies are selected
+
     if second_company_selected is not None:
+        print("data used is two companies")
 
         def process_data(data):
             #for company 1
@@ -462,6 +464,7 @@ def main():
 
     #if a second harm is selected
     elif second_harm_selected is not None:
+        print("data used its trwo harms")
     
         def process_data(data):
             #for company 1
@@ -495,6 +498,7 @@ def main():
 
     #if two harms or two companies are NOT selected (default option none)
     else:
+        print("data used is 1 harm and 1 company")
         #Ffor one company and one harm only
         def process_data(data):
             return plot_acc_totals_per_harm_company_harm_historical_orig(data, company_selected, harm_selected)
@@ -642,41 +646,39 @@ def main():
             'Manual': [result[1] for result in results_second_company_selected],
             'Company': second_company_selected
 
+
         })
 
+        # Process Data: Compute average moderation time (in hours) per category for both companies
+        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean() / 60
+        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean() / 60
 
-        acc_total4 = df_company_1[['Automated']].mean().iloc[0]
-        user_total4 = df_company_1[['Manual']].mean().iloc[0]
-
-        acc_total4_second = df_company_2[['Automated']].mean().iloc[0]
-        user_total4_second = df_company_2[['Manual']].mean().iloc[0]
+        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean() / 60
+        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean() / 60
 
 
-
-       # Create DataFrame with the totals for both companies
+        # Create DataFrame with the totals for both companies
         df_totals = pd.DataFrame({
             'Category': ['Automated', 'Manual', 'Automated', 'Manual'],
-            'Total Harm Count': [acc_total4, user_total4, acc_total4_second, user_total4_second],
+            'Average Moderation Time (Hrs)': [acc_total4, user_total4, acc_total4_second, user_total4_second],
             'Company': [company_selected, company_selected, second_company_selected, second_company_selected]
         })
-
-        #print("df total 2 companies graph4", df_totals)
 
         # Define color scale for Automated vs Manual
         color_scale = alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])
 
-        # Create a grouped bar chart
+        # Create a grouped bar chart with company offset
         bars = alt.Chart(df_totals).mark_bar().encode(
             x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),  # Categories (Automated, Manual)
-            y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),  # Total harm count on Y-axis
+            y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),  # Total harm count on Y-axis
             color=alt.Color('Category:N', scale=color_scale, legend=None),  # Color by Automated/Manual
             xOffset='Company:N'  # Offset bars by Company (ensures grouping)
         )
 
-        # Add text labels above the bars showing company names
+        # Add text labels above bars showing company names
         text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12).encode(
             x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
-            y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
+            y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),
             text=alt.Text('Company:N'),  # Display company name
             xOffset='Company:N'  # Align text with corresponding bars
         )
@@ -830,20 +832,23 @@ def main():
             'Harm': second_harm_selected
         })
 
-        df_combined = pd.concat([df_company_1.melt(['Dates', 'Harm'], var_name='Type', value_name='DAILY FLAGGED CONTENT'),
-                                df_company_2.melt(['Dates', 'Harm'], var_name='Type', value_name='DAILY FLAGGED CONTENT')])
+        # Process Data: Compute average moderation time (in hours) for both harms
+        acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean() / 60
+        user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean() / 60
 
-        # Calculate the average for each category and company
-        acc_total4 = df_company_1[['Automated']].mean().iloc[0]
-        user_total4 = df_company_1[['Manual']].mean().iloc[0]
+        acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean() / 60
+        user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean() / 60
 
-        acc_total4_second = df_company_2[['Automated']].mean().iloc[0]
-        user_total4_second = df_company_2[['Manual']].mean().iloc[0]
+        # Handle NaN cases (replace with 0 if no data available)
+        acc_total4 = 0 if pd.isna(acc_total4) else acc_total4
+        user_total4 = 0 if pd.isna(user_total4) else user_total4
+        acc_total4_second = 0 if pd.isna(acc_total4_second) else acc_total4_second
+        user_total4_second = 0 if pd.isna(user_total4_second) else user_total4_second
 
-        # Create the DataFrame for visualization
+        # Create DataFrame for visualization
         df_bar = pd.DataFrame({
             'Category': ['Automated', 'Manual', 'Automated', 'Manual'],
-            'Total Harm Count': [acc_total4, user_total4, acc_total4_second, user_total4_second],
+            'Average Moderation Time (Hrs)': [acc_total4, user_total4, acc_total4_second, user_total4_second],
             'Harm': [harm_selected_label, harm_selected_label, second_harm_selected_label, second_harm_selected_label]
         })
 
@@ -853,13 +858,16 @@ def main():
         # Create grouped bar chart (Harm as main category, with separate Automated & Manual bars)
         chart_four = alt.Chart(df_bar).mark_bar().encode(
             x=alt.X('Harm:N', title='Harm Type', axis=alt.Axis(labelAngle=0)),  # Harm types on x-axis
-            y=alt.Y('Total Harm Count:Q', title='AVERAGE MODERATION TIME (HRS)'),  # Moderation time on y-axis
+            y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),  # Moderation time on y-axis
             color=alt.Color('Category:N', scale=color_scale, legend=alt.Legend(title="Moderation Type")),  # Color for Automated & Manual
-            xOffset='Category:N',  # Offsets bars to group by Harm
-            tooltip=['Category', 'Total Harm Count', 'Harm']
+            xOffset='Category:N',  # Offsets bars to group by Harm type
+            tooltip=['Category', 'Average Moderation Time (Hrs)', 'Harm']
         ).properties(
             width=300
         )
+
+        chart_four
+
 
     #graph creation for default (none)
     else:
@@ -1034,7 +1042,7 @@ def main():
         try:
             # Two companies working
             if not company_selected or not second_company_selected:
-                print("two companies selected")
+               # print("two companies selected")
                 raise NameError("Company selection is not valid.")
             
             st.write(
@@ -1049,7 +1057,6 @@ def main():
         except NameError:
             try:
                 # Two harms working
-                print("two harms selected")
                 if not harm_selected or not second_harm_selected:
                     raise NameError("Harm selection is not valid.")
                 
@@ -1063,7 +1070,6 @@ def main():
                     unsafe_allow_html=True
                 )
             except NameError:
-                print("else")
                 try:
                     harm_version = category_descriptions.get(harm_selected, "UNKNOWN HARM")
                     
