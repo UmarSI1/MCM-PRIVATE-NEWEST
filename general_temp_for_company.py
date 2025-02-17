@@ -122,12 +122,12 @@ def sum_company(data, company):
 
 
 
-# company_data = {'Company': [], 'N# Actions': []}
+# company_data = {'Company': [], 'Number of Moderated Content': []}
 # for company in List_of_companies:
 #     num_actions = sum_company(data_ACC, company)
 #     company_data['Company'].append(company)
-#     company_data['N# Actions'].append(num_actions)
-#    # print('Company:', company, ', N# Actions: ', num_actions)
+#     company_data['Number of Moderated Content'].append(num_actions)
+#    # print('Company:', company, ', Number of Moderated Content: ', num_actions)
 
 # df_company = pd.DataFrame(company_data).dropna()
 
@@ -166,8 +166,8 @@ def plot_acc_totals_company(data, company):
     automation_detection_totals['Total'] = total_sum_all_automation_detection  # Append the total sum
 
     # Create a DataFrame for the automation status totals
-    automation_detection_data = {'Automation Detection': list(automation_detection_totals.keys()),
-                              'N# Actions': list(automation_detection_totals.values())}
+    automation_detection_data = {'Automation Type': list(automation_detection_totals.keys()),
+                              'Number of Moderated Content': list(automation_detection_totals.values())}
     df_automation_detection = pd.DataFrame(automation_detection_data).dropna()
 
     # Define automation decision descriptions for mapping
@@ -177,7 +177,7 @@ def plot_acc_totals_company(data, company):
     }
 
     # Rename the automation statuses in the DataFrame
-    df_automation_detection['Automation Detection'] = df_automation_detection['Automation Detection'].map(automated_detection_cleaned).fillna('Total')
+    df_automation_detection['Automation Detection'] = df_automation_detection['Automation Type'].map(automated_detection_cleaned).fillna('Total')
 
     # Plotting the table
     fig3, ax = plt.subplots()
@@ -229,16 +229,16 @@ def plot_acc_totals_per_company_company(data, company):
                             total_acc_totals[company] += automation_detection  # Accumulate the total sum for each company
 
     # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'ACC': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'ACC': [], 'Number of Moderated Content': []}
     for company, automation_detection in acc_totals_per_company.items():
         for content_type, total_actions in automation_detection.items():
             data_for_df['Company'].append(company)
             data_for_df['ACC'].append(content_type)
-            data_for_df['N# Actions'].append(int(float(total_actions)))  # Convert to float first, then to int
+            data_for_df['Number of Moderated Content'].append(int(float(total_actions)))  # Convert to float first, then to int
         # Add total for each company
       #  data_for_df['Company'].append(company)
      #   data_for_df['ACC'].append('Total')
-       # data_for_df['N# Actions'].append(total_acc_totals[company])
+       # data_for_df['Number of Moderated Content'].append(total_acc_totals[company])
 
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -257,7 +257,7 @@ def plot_acc_totals_per_company_company(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_per_company.pivot(index='Company', columns='ACC', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_per_company.pivot(index='Company', columns='ACC', values='Number of Moderated Content').fillna(0).reset_index()
 
     
 
@@ -319,11 +319,11 @@ def plot_acc_totals_per_harm_company(data, company):
                          
 
 # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'ACC': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'ACC': [], 'Number of Moderated Content': []}
     for (harm, acc), total_actions in acc_totals_per_harm.items():
         data_for_df['Harm'].append(harm)
         data_for_df['ACC'].append(acc)
-        data_for_df['N# Actions'].append(int(total_actions))
+        data_for_df['Number of Moderated Content'].append(int(total_actions))
 
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -360,7 +360,7 @@ def plot_acc_totals_per_harm_company(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_per_company.pivot(index='Harm', columns='ACC', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_per_company.pivot(index='Harm', columns='ACC', values='Number of Moderated Content').fillna(0).reset_index()
 
     
 
@@ -425,11 +425,11 @@ def plot_acc_totals_per_moderation_action_company(data, company):
                          
 
 # Prepare data for DataFrame
-    data_for_df = {'Action': [], 'ACC': [], 'N# Actions': []}
+    data_for_df = {'Action': [], 'ACC': [], 'Number of Moderated Content': []}
     for (action, acc), total_actions in acc_totals_per_action.items():
         data_for_df['Action'].append(action)
         data_for_df['ACC'].append(acc)
-        data_for_df['N# Actions'].append(int(total_actions))
+        data_for_df['Number of Moderated Content'].append(int(total_actions))
 
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -467,7 +467,7 @@ def plot_acc_totals_per_moderation_action_company(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_per_company.pivot(index='Action', columns='ACC', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_per_company.pivot(index='Action', columns='ACC', values='Number of Moderated Content').fillna(0).reset_index()
 
     
 
@@ -531,11 +531,11 @@ def plot_acc_totals_per_automation_status_company(data, company):
                          
 
 # Prepare data for DataFrame
-    data_for_df = {'Status': [], 'ACC': [], 'N# Actions': []}
+    data_for_df = {'Status': [], 'ACC': [], 'Number of Moderated Content': []}
     for (status, acc), total_actions in acc_totals_per_status.items():
         data_for_df['Status'].append(status)
         data_for_df['ACC'].append(acc)
-        data_for_df['N# Actions'].append(int(total_actions))
+        data_for_df['Number of Moderated Content'].append(int(total_actions))
 
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -563,7 +563,7 @@ def plot_acc_totals_per_automation_status_company(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_per_company.pivot(index='Status', columns='ACC', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_per_company.pivot(index='Status', columns='ACC', values='Number of Moderated Content').fillna(0).reset_index()
 
     
 
@@ -626,11 +626,11 @@ def plot_acc_totals_per_content_type_company(data, company):
                          
 
 # Prepare data for DataFrame
-    data_for_df = {'Content': [], 'ACC': [], 'N# Actions': []}
+    data_for_df = {'Content': [], 'ACC': [], 'Number of Moderated Content': []}
     for (content, acc), total_actions in acc_totals_per_content.items():
         data_for_df['Content'].append(content)
         data_for_df['ACC'].append(acc)
-        data_for_df['N# Actions'].append(int(total_actions))
+        data_for_df['Number of Moderated Content'].append(int(total_actions))
 
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -668,7 +668,7 @@ def plot_acc_totals_per_content_type_company(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_per_company.pivot(index='Content', columns='ACC', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_per_company.pivot(index='Content', columns='ACC', values='Number of Moderated Content').fillna(0).reset_index()
 
     
 
@@ -728,10 +728,10 @@ def plot_company_dataxxz1(data, company):
                         total_sum += automation_detection
         return total_sum
 
-    company_data = {'Company': [], 'N# Actions': []}
+    company_data = {'Company': [], 'Number of Moderated Content': []}
     num_actions = sum_company(data, company)
     company_data['Company'].append(company)
-    company_data['N# Actions'].append(int(float(num_actions)))
+    company_data['Number of Moderated Content'].append(int(float(num_actions)))
 
     df_company = pd.DataFrame(company_data).dropna()
 
@@ -768,10 +768,10 @@ def plot_company_dataxxz1_normalized(data, company):
                             total_sum += automation_detection
         return total_sum
 
-    company_data = {'Company': [], 'N# Actions': []}
+    company_data = {'Company': [], 'Number of Moderated Content': []}
     num_actions = sum_company(data, company)
     company_data['Company'].append(company)
-    company_data['N# Actions'].append(int(float(num_actions)))
+    company_data['Number of Moderated Content'].append(int(float(num_actions)))
 
     df_company = pd.DataFrame(company_data).dropna()
 
@@ -779,7 +779,7 @@ def plot_company_dataxxz1_normalized(data, company):
     fig, ax = plt.subplots(figsize=(10, 12))
 
     # Bar chart
-    df_company.plot(kind='bar', x='Company', y='N# Actions', ax=ax)
+    df_company.plot(kind='bar', x='Company', y='Number of Moderated Content', ax=ax)
     ax.set_xlabel('Company')
     ax.set_ylabel('Total Number of Actions')
     ax.set_title('Total Number of Actions per Company')
@@ -823,7 +823,7 @@ def sum_harm1(data_ACC, company):
                             harm_totals[harm] += automation_detection
                             total_sum_all_harms += automation_detection
     
-    harm_data = {'Harm': list(harm_totals.keys()), 'N# Actions': list(harm_totals.values())}
+    harm_data = {'Harm': list(harm_totals.keys()), 'Number of Moderated Content': list(harm_totals.values())}
     df_harm = pd.DataFrame(harm_data).dropna()
 
     # Renaming the harm categories in your DataFrame
@@ -870,7 +870,7 @@ def plot_content_type_totals1(data, company):
                             total_sum_all_content_types += automation_detection
     
     # Create a DataFrame for the content type totals
-    content_type_data = {'Content Type': list(content_type_totals.keys()), 'N# Actions': list(content_type_totals.values())}
+    content_type_data = {'Content Type': list(content_type_totals.keys()), 'Number of Moderated Content': list(content_type_totals.values())}
     df_content_type = pd.DataFrame(content_type_data).dropna()
 
     # Define content type descriptions for mapping
@@ -948,13 +948,13 @@ def plot_moderation_action_totals1(data, company):
 
     # Create a DataFrame for the moderation action totals
     moderation_action_data = {'Moderation Action': list(moderation_action_totals.keys()),
-                              'N# Actions': list(moderation_action_totals.values())}
+                              'Number of Moderated Content': list(moderation_action_totals.values())}
     df_moderation_action = pd.DataFrame(moderation_action_data).dropna()
 
     # Define visibility descriptions for mapping
     visibility_descriptionss = {
     '["DECISION_VISIBILITY_CONTENT_REMOVED"]': 'REMOVED',
-    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'RESTRICTED/REMOVED',
+    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'INTERACTION RESTRICTED/REMOVED',
     '["DECISION_VISIBILITY_CONTENT_REMOVED","DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED"]': 'REMOVED/AGE RESTRICTED',
     '["DECISION_VISIBILITY_OTHER","DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED"]': 'OTHER/AGE RESTRICTED',
     '["DECISION_VISIBILITY_CONTENT_LABELLED"]': 'LABELLED',
@@ -964,13 +964,15 @@ def plot_moderation_action_totals1(data, company):
     '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED"]': 'INTERACTION RESTRICTED',
     '["ACCOUNT MODERATION"]': 'ACCOUNT MODERATION',
     '["DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'DEMOTED',
-    '["ACCOUNT MODERATION"]': 'ACCOUNT MODERATION',
-    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'AGE RESTRICTED/REMOVED',  # New entry 1
-    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'INTERACTION RESTRICTED/REMOVED',  # New entry 2
-    '["DECISION_VISIBILITY_OTHER","DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'OTHER/DEMOTED',  # New entry 3
-    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED"]': 'INTERACTION RESTRICTED',  # New entry 4
-    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_OTHER"]': 'AGE RESTRICTED/OTHER',  # New entry 5
-    '["DECISION_VISIBILITY_CONTENT_DEMOTED","DECISION_VISIBILITY_OTHER"]': 'DEMOTED/OTHER'  # New entry 6
+    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'AGE RESTRICTED/REMOVED',
+    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED","DECISION_VISIBILITY_CONTENT_REMOVED"]': 'INTERACTION RESTRICTED/REMOVED',
+    '["DECISION_VISIBILITY_OTHER","DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'OTHER/DEMOTED',
+    '["DECISION_VISIBILITY_CONTENT_INTERACTION_RESTRICTED"]': 'INTERACTION RESTRICTED',
+    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_OTHER"]': 'AGE RESTRICTED/OTHER',
+    '["DECISION_VISIBILITY_CONTENT_DEMOTED","DECISION_VISIBILITY_OTHER"]': 'DEMOTED/OTHER',
+    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'AGE RESTRICTED/DEMOTED',
+    '["DECISION_VISIBILITY_OTHER","DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'OTHER/DEMOTED',
+    '["DECISION_VISIBILITY_CONTENT_AGE_RESTRICTED","DECISION_VISIBILITY_CONTENT_DEMOTED"]': 'AGE RESTRICTED/DEMOTED'
 }
 
 
@@ -1023,7 +1025,7 @@ def plot_automation_status_totals1(data, company):
     
     # Create a DataFrame for the automation status totals
     automation_status_data = {'Automation Status': list(automation_status_totals.keys()),
-                              'N# Actions': list(automation_status_totals.values())}
+                              'Number of Moderated Content': list(automation_status_totals.values())}
     df_automation_status = pd.DataFrame(automation_status_data).dropna()
 
     # Define automation decision descriptions for mapping
@@ -1081,12 +1083,12 @@ def plot_harm_totals_per_company1(data, company):
                         harm_totals_per_company[company][harm] += automation_detection
     
     # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'Harm': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'Harm': [], 'Number of Moderated Content': []}
     for company, harms in harm_totals_per_company.items():
         for harm, total_actions in harms.items():
             data_for_df['Company'].append(company)
             data_for_df['Harm'].append(harm)
-            data_for_df['N# Actions'].append(total_actions)
+            data_for_df['Number of Moderated Content'].append(total_actions)
     
     df_harm_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -1116,7 +1118,7 @@ def plot_harm_totals_per_company1(data, company):
     wrapped_columns = [textwrap.fill(col, width=15) for col in df_harm_per_company.columns]
 
     # Pivot the DataFrame
-    #pivot_df = df_harm_per_company.pivot(index='Company', columns='Harm', values='N# Actions').fillna(0).reset_index()
+    #pivot_df = df_harm_per_company.pivot(index='Company', columns='Harm', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Plotting the table
     fig4, ax = plt.subplots(figsize=(7, 3))  # Adjust the figsize as needed
@@ -1163,12 +1165,12 @@ def plot_content_type_totals_per_company1(data, company):
               
     
    # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'Content Type': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'Content Type': [], 'Number of Moderated Content': []}
     for company, content_types in content_type_totals_per_company.items():
         for content_type, total_actions in content_types.items():
             data_for_df['Company'].append(company)
             data_for_df['Content Type'].append(content_type)
-            data_for_df['N# Actions'].append(total_actions)
+            data_for_df['Number of Moderated Content'].append(total_actions)
     
     df_content_type_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -1180,25 +1182,29 @@ def plot_content_type_totals_per_company1(data, company):
     '["CONTENT_TYPE_IMAGE"]': 'IMAGE',
     '["CONTENT_TYPE_TEXT"]': 'TEXT',
     '["CONTENT_TYPE_VIDEO"]': 'VIDEO',
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT"]': 'IMAGE/TEXT',
+    '["CONTENT_TYPE_APP"]': 'APP',
     '["CONTENT_TYPE_AUDIO"]': 'AUDIO',
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT","CONTENT_TYPE_OTHER"]': 'IMAGE/TEXT/OTHER',
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_OTHER","CONTENT_TYPE_TEXT"]': 'IMAGE/OTHER/TEXT',
-    '["CONTENT_TYPE_OTHER","CONTENT_TYPE_TEXT","CONTENT_TYPE_IMAGE"]': 'OTHER/TEXT/IMAGE',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT"]': 'IMAGE/TEXT',
+    '["CONTENT_TYPE_TEXT","CONTENT_TYPE_VIDEO"]': 'TEXT/VIDEO',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO"]': 'IMAGE/VIDEO',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT","CONTENT_TYPE_VIDEO"]': 'IMAGE/TEXT/VIDEO',
     '["CONTENT_TYPE_OTHER","CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT"]': 'OTHER/IMAGE/TEXT',
     '["CONTENT_TYPE_TEXT","CONTENT_TYPE_OTHER","CONTENT_TYPE_IMAGE"]': 'TEXT/OTHER/IMAGE',
-    '["CONTENT_TYPE_APP"]': 'APP',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_OTHER","CONTENT_TYPE_TEXT"]': 'IMAGE/OTHER/TEXT',
+    '["CONTENT_TYPE_OTHER","CONTENT_TYPE_TEXT","CONTENT_TYPE_IMAGE"]': 'OTHER/TEXT/IMAGE',
     '["CONTENT_TYPE_TEXT","CONTENT_TYPE_IMAGE","CONTENT_TYPE_OTHER"]': 'TEXT/IMAGE/OTHER',
-    '["CONTENT_TYPE_TEXT","CONTENT_TYPE_VIDEO"]': 'TEXT/VIDEO',
-    '["CONTENT_TYPE_AUDIO","CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO"]': 'AUDIO/IMAGE/VIDEO',
     '["CONTENT_TYPE_AUDIO","CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT","CONTENT_TYPE_VIDEO"]': 'AUDIO/TEXT/VIDEO/IMAGE',
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_TEXT","CONTENT_TYPE_VIDEO"]': 'IMAGE/TEXT/VIDEO',
-    '["CONTENT_TYPE_PRODUCT","CONTENT_TYPE_TEXT"]': 'PRODUCT/TEXT',
+    '["CONTENT_TYPE_AUDIO","CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO"]': 'AUDIO/IMAGE/VIDEO',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO","CONTENT_TYPE_TEXT"]': 'IMAGE/VIDEO/TEXT',
+    '["CONTENT_TYPE_VIDEO","CONTENT_TYPE_TEXT"]': 'VIDEO/TEXT',
+    '["CONTENT_TYPE_OTHER","CONTENT_TYPE_TEXT"]': 'OTHER/TEXT',
     '["CONTENT_TYPE_TEXT","CONTENT_TYPE_IMAGE"]': 'TEXT/IMAGE',
     '["CONTENT_TYPE_TEXT","CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO"]': 'TEXT/IMAGE/VIDEO',
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_VIDEO"]': 'IMAGE/VIDEO',  # New entry 1
-    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_PRODUCT"]': 'IMAGE/PRODUCT'  # New entry 2
+    '["CONTENT_TYPE_PRODUCT","CONTENT_TYPE_TEXT"]': 'PRODUCT/TEXT',
+    '["CONTENT_TYPE_IMAGE","CONTENT_TYPE_PRODUCT"]': 'IMAGE/PRODUCT'
 }
+
+
 
 
     # Rename the content type categories in the DataFrame
@@ -1207,7 +1213,7 @@ def plot_content_type_totals_per_company1(data, company):
     wrapped_columns = [textwrap.fill(col, width=15) for col in df_content_type_per_company.columns]
 
     # Pivot the DataFrame
-    #pivot_df = df_content_type_per_company.pivot(index='Company', columns='Content Type', values='N# Actions').fillna(0).reset_index()
+    #pivot_df = df_content_type_per_company.pivot(index='Company', columns='Content Type', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the figsize as needed
@@ -1259,12 +1265,12 @@ def sum_reports_per_moderation_action_per_company1(data, company):
                             total_moderation_action_totals_per_company[company] += automation_detection  # Accumulate total sum
     
     # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'Moderation Action': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'Moderation Action': [], 'Number of Moderated Content': []}
     for company, moderation_actions in moderation_action_totals_per_company.items():
         for moderation_action, total_actions in moderation_actions.items():
             data_for_df['Company'].append(company)
             data_for_df['Moderation Action'].append(moderation_action)
-            data_for_df['N# Actions'].append(total_actions if total_actions is not None else 0)  # <-- Changed this line
+            data_for_df['Number of Moderated Content'].append(total_actions if total_actions is not None else 0)  # <-- Changed this line
 
     # Create DataFrame and handle any NaN values
     df_moderation_action_per_company = pd.DataFrame(data_for_df).fillna(0)  # <-- Changed this line
@@ -1321,12 +1327,12 @@ def plot_automation_status_table_general1(data, company):
                                 total_automation_status_totals[automation_status] = total_automation_status_totals.get(automation_status, 0) + automation_detection
     
     # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for company, automation_statuses in automation_status_totals_per_company.items():
         for automation_status, total_actions in automation_statuses.items():
             data_for_df['Company'].append(company)
             data_for_df['Automation Status'].append(automation_status)
-            data_for_df['N# Actions'].append(total_actions)
+            data_for_df['Number of Moderated Content'].append(total_actions)
     
     df_automation_status_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -1341,7 +1347,7 @@ def plot_automation_status_table_general1(data, company):
     df_automation_status_per_company['Automation Status'] = df_automation_status_per_company['Automation Status'].map(automated_decision_cleaned)
 
     # Pivot the DataFrame
-   # pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='N# Actions').fillna(0).reset_index()
+   # pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the figsize as needed
@@ -1386,12 +1392,12 @@ def plot_normalized_automation_status1(data, company):
                             automation_status_totals_per_company[company][automation_status] += automation_detection
     
     # Prepare data for DataFrame
-    data_for_df = {'Company': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Company': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for company, automation_statuses in automation_status_totals_per_company.items():
         for automation_status, total_actions in automation_statuses.items():
             data_for_df['Company'].append(company)
             data_for_df['Automation Status'].append(automation_status)
-            data_for_df['N# Actions'].append(total_actions)
+            data_for_df['Number of Moderated Content'].append(total_actions)
     
     df_automation_status_per_company = pd.DataFrame(data_for_df).dropna()
 
@@ -1408,7 +1414,7 @@ def plot_normalized_automation_status1(data, company):
     
 
     # Pivot the DataFrame
-    pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Normalize the values
     pivot_df.iloc[:, 1:] = pivot_df.iloc[:, 1:].div(pivot_df.iloc[:, 1:].sum(axis=1), axis=0)
@@ -1449,11 +1455,11 @@ def plot_harm_content_type1(data, company):
 
     
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Content Type': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Content Type': [], 'Number of Moderated Content': []}
     for (harm, content_type), total_actions in harm_content_type_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Content Type'].append(content_type)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_harm_content_type = pd.DataFrame(data_for_df).dropna()
 
@@ -1505,7 +1511,7 @@ def plot_harm_content_type1(data, company):
     df_harm_content_type['Content Type'] = df_harm_content_type['Content Type'].map(content_type_descriptions)
 
     # Pivot the DataFrame for the table
-    pivot_df_table = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='N# Actions').fillna(0).reset_index()
+    pivot_df_table = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='Number of Moderated Content').fillna(0).reset_index()
 
     wrapped_columns = [textwrap.fill(col, width=10) for col in pivot_df_table.columns]
 
@@ -1539,11 +1545,11 @@ def plot_harm_content_type_1(data, company):
                             harm_content_type_totals[(harm, content_type)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Content Type': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Content Type': [], 'Number of Moderated Content': []}
     for (harm, content_type), total_actions in harm_content_type_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Content Type'].append(content_type)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     category_descriptions = {
         'STATEMENT_CATEGORY_SCOPE_OF_PLATFORM_SERVICE': 'PLATFORM SCOPE',
@@ -1592,7 +1598,7 @@ def plot_harm_content_type_1(data, company):
 
 
     # Aggregate values in case of duplicates
-    # df_harm_content_type = df_harm_content_type.groupby(['Harm', 'Content Type'])['N# Actions'].sum().reset_index()
+    # df_harm_content_type = df_harm_content_type.groupby(['Harm', 'Content Type'])['Number of Moderated Content'].sum().reset_index()
 
     # Rename the categories in the DataFrame
     df_harm_content_type['Harm'] = df_harm_content_type['Harm'].map(category_descriptions).fillna('Harm')
@@ -1601,7 +1607,7 @@ def plot_harm_content_type_1(data, company):
     df_harm_content_type = df_harm_content_type.groupby(['Harm', 'Content Type'], as_index=False).sum()
 
     # Pivot the DataFrame for the table
-    pivot_df_table = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='N# Actions').fillna(0)
+    pivot_df_table = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='Number of Moderated Content').fillna(0)
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 12))
@@ -1615,7 +1621,6 @@ def plot_harm_content_type_1(data, company):
     table.set_fontsize(10)
 
     return pivot_df_table
-
 
 
 def plot_harm_content_type_normalized1(data, company):
@@ -1634,11 +1639,11 @@ def plot_harm_content_type_normalized1(data, company):
                             harm_content_type_totals[(harm, content_type)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Content Type': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Content Type': [], 'Number of Moderated Content': []}
     for (harm, content_type), total_actions in harm_content_type_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Content Type'].append(content_type)
-        data_for_df['N# Actions'].append(total_actions if total_actions is not None else 0)  # Replace None with 0
+        data_for_df['Number of Moderated Content'].append(total_actions if total_actions is not None else 0)  # Replace None with 0
 
     df_harm_content_type = pd.DataFrame(data_for_df).fillna(0)  # Fill NaNs in the DataFrame with 0
 
@@ -1696,21 +1701,23 @@ def plot_harm_content_type_normalized1(data, company):
     fig, ax = plt.subplots(figsize=(10, 12))
 
     # Pivot the DataFrame for the chart
-    pivot_df_chart = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='N# Actions').fillna(0).reset_index()
+    pivot_df_chart = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='Number of Moderated Content').fillna(0).reset_index()
 
-    # Normalize the values, filling NaNs that might result from empty rows
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0)
+    # Normalize the values, converting to percentages and formatting with %
+    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0) * 100
+    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].applymap(lambda x: f"{x:.2f}%")
 
     # Plotting the normalized data
-    pivot_df_chart.set_index('Harm').plot(kind='bar', stacked=True, ax=ax)
+    pivot_df_chart.set_index('Harm').apply(lambda x: x.str.replace('%', '').astype(float)).plot(kind='bar', stacked=True, ax=ax)
     ax.set_xlabel('Harm')
-    ax.set_ylabel('Normalized Count')
-    ax.set_title('Normalized Content Type by Harm')
+    ax.set_ylabel('Normalized Count (%)')
+    ax.set_title('Normalized Content Type by Harm (in %)')
     ax.legend(title='Content Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.xticks(rotation=45)
     plt.tight_layout()
 
     return pivot_df_chart
+
 
 
 
@@ -1731,11 +1738,11 @@ def sum_reports_per_harm_per_moderation_action1(data, company):
                         harm_moderation_action_totals[(harm, moderation_action)] += count
 
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Moderation Action': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Moderation Action': [], 'Number of Moderated Content': []}
     for (harm, moderation_action), total_actions in harm_moderation_action_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Moderation Action'].append(moderation_action)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_harm_moderation_action = pd.DataFrame(data_for_df).dropna()
 
@@ -1747,7 +1754,7 @@ def sum_reports_per_harm_per_moderation_action1(data, company):
     df_harm_moderation_action['Moderation Action'] = df_harm_moderation_action['Moderation Action'].map(visibility_descriptions)
 
     # Pivot the DataFrame
-    pivot_df = df_harm_moderation_action.pivot(index='Harm', columns='Moderation Action', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_harm_moderation_action.pivot(index='Harm', columns='Moderation Action', values='Number of Moderated Content').fillna(0).reset_index()
 
     wrapped_columns = [textwrap.fill(col, width=20) for col in pivot_df.columns]
 
@@ -1801,11 +1808,11 @@ def plot_harm_automation_status1(data, company):
                             harm_automation_status_totals[(harm, automation_status)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for (harm, automation_status), total_actions in harm_automation_status_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Automation Status'].append(automation_status)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_harm_automation_status = pd.DataFrame(data_for_df).dropna()
 
@@ -1838,7 +1845,7 @@ def plot_harm_automation_status1(data, company):
     df_harm_automation_status['Automation Status'] = df_harm_automation_status['Automation Status'].map(automated_decision_cleaned)
 
     # Pivot the DataFrame for the table
-    pivot_df_table = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='N# Actions').fillna(0).reset_index()
+    pivot_df_table = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 12))
@@ -1871,12 +1878,12 @@ def plot_harm_automation_status1_normalized(data, company):
                             harm_automation_status_totals[(harm, automation_status)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Harm': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Harm': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for (harm, automation_status), total_actions in harm_automation_status_totals.items():
         data_for_df['Harm'].append(harm)
         data_for_df['Automation Status'].append(automation_status)
         # Replaced None with 0 in total_actions to handle missing values
-        data_for_df['N# Actions'].append(total_actions if total_actions is not None else 0)  # <-- Changed this line
+        data_for_df['Number of Moderated Content'].append(total_actions if total_actions is not None else 0)  # <-- Changed this line
 
     # Create the DataFrame and fill NaN values with 0
     df_harm_automation_status = pd.DataFrame(data_for_df).fillna(0)  # <-- Changed this line
@@ -1910,13 +1917,13 @@ def plot_harm_automation_status1_normalized(data, company):
     df_harm_automation_status['Automation Status'] = df_harm_automation_status['Automation Status'].map(automated_decision_cleaned).fillna('UNKNOWN STATUS')  # <-- Changed this line
 
     # Pivot the DataFrame for the table and fill NaNs with 0
-    pivot_df_table = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='N# Actions').fillna(0).reset_index()  # <-- Changed this line
+    pivot_df_table = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()  # <-- Changed this line
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 12))
 
     # Pivot the DataFrame for the chart and fill NaNs with 0
-    pivot_df_chart = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='N# Actions').fillna(0).reset_index()  # <-- Changed this line
+    pivot_df_chart = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()  # <-- Changed this line
 
     # Normalize the values and fill NaNs resulting from empty rows with 0
     pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0)  # <-- Changed this line
@@ -1954,11 +1961,11 @@ def plot_content_type_automation_status1(data, company):
                             content_type_automation_status_totals[(content_type, automation_status)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Content Type': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Content Type': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for (content_type, automation_status), total_actions in content_type_automation_status_totals.items():
         data_for_df['Content Type'].append(content_type)
         data_for_df['Automation Status'].append(automation_status)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_content_type_automation_status = pd.DataFrame(data_for_df).dropna()
 
@@ -2002,7 +2009,7 @@ def plot_content_type_automation_status1(data, company):
     df_content_type_automation_status = df_content_type_automation_status.groupby(['Content Type', 'Automation Status'], as_index=False).sum()
 
     # Pivot the DataFrame for the table
-    pivot_df_table = df_content_type_automation_status.pivot(index='Content Type', columns='Automation Status', values='N# Actions').fillna(0).reset_index()
+    pivot_df_table = df_content_type_automation_status.pivot(index='Content Type', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
 
 
@@ -2018,7 +2025,6 @@ def plot_content_type_automation_status1(data, company):
     table.set_fontsize(10)
     
     return pivot_df_table
-
 
 
 def plot_content_type_automation_status1_normalized(data, company):
@@ -2037,15 +2043,15 @@ def plot_content_type_automation_status1_normalized(data, company):
                             content_type_automation_status_totals[(content_type, automation_status)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Content Type': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Content Type': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for (content_type, automation_status), total_actions in content_type_automation_status_totals.items():
         data_for_df['Content Type'].append(content_type)
         data_for_df['Automation Status'].append(automation_status)
         # Replace None with 0 for total_actions if missing
-        data_for_df['N# Actions'].append(total_actions if total_actions is not None else 0)  # <-- Changed this line
+        data_for_df['Number of Moderated Content'].append(total_actions if total_actions is not None else 0)
 
     # Create DataFrame and fill NaN values with 0
-    df_content_type_automation_status = pd.DataFrame(data_for_df).fillna(0)  # <-- Changed this line
+    df_content_type_automation_status = pd.DataFrame(data_for_df).fillna(0)
 
     # Define automated decision and content type descriptions for mapping
     automated_decision_cleaned = {
@@ -2080,31 +2086,37 @@ def plot_content_type_automation_status1_normalized(data, company):
     }
 
     # Rename content types and fill missing values
-    df_content_type_automation_status['Content Type'] = df_content_type_automation_status['Content Type'].map(content_type_descriptions).fillna('UNKNOWN CONTENT TYPE')  # <-- Changed this line
-    df_content_type_automation_status['Automation Status'] = df_content_type_automation_status['Automation Status'].map(automated_decision_cleaned).fillna('UNKNOWN STATUS')  # <-- Changed this line
+    df_content_type_automation_status['Content Type'] = df_content_type_automation_status['Content Type'].map(content_type_descriptions).fillna('UNKNOWN CONTENT TYPE')
+    df_content_type_automation_status['Automation Status'] = df_content_type_automation_status['Automation Status'].map(automated_decision_cleaned).fillna('UNKNOWN STATUS')
 
     # Group by 'Content Type' and 'Automation Status' and fill NaNs with 0
-    df_content_type_automation_status = df_content_type_automation_status.groupby(['Content Type', 'Automation Status'], as_index=False).sum().fillna(0)  # <-- Changed this line
+    df_content_type_automation_status = df_content_type_automation_status.groupby(['Content Type', 'Automation Status'], as_index=False).sum().fillna(0)
 
     # Plotting the table
     fig, ax = plt.subplots(figsize=(10, 12))
 
     # Pivot the DataFrame for the chart and fill NaNs with 0
-    pivot_df_chart = df_content_type_automation_status.pivot(index='Content Type', columns='Automation Status', values='N# Actions').fillna(0).reset_index()  # <-- Changed this line
+    pivot_df_chart = df_content_type_automation_status.pivot(index='Content Type', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
-    # Normalize the values and fill NaNs resulting from empty rows with 0
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0)  # <-- Changed this line
+    # Normalize the values to percentages and format as strings with '%'
+    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0) * 100
+    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].applymap(lambda x: f'{x:.2f}%')
 
     # Plotting the normalized data
-    pivot_df_chart.set_index('Content Type').plot(kind='bar', stacked=True, ax=ax)
+    pivot_df_chart_numeric = pivot_df_chart.copy()
+    for col in pivot_df_chart_numeric.columns[1:]:
+        pivot_df_chart_numeric[col] = pivot_df_chart_numeric[col].str.rstrip('%').astype(float)
+
+    pivot_df_chart_numeric.set_index('Content Type').plot(kind='bar', stacked=True, ax=ax)
     ax.set_xlabel('Content Type')
-    ax.set_ylabel('Normalized Count')
-    ax.set_title('Normalized Automation Status by Content Type')
+    ax.set_ylabel('Percentage')
+    ax.set_title('Normalized Automation Status by Content Type (%)')
     ax.legend(title='Automation Status', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
     plt.xticks(rotation=45)
 
     return pivot_df_chart
+
 
 ######### Data General plot - Number of reported Moderation action  per Content Type
 
@@ -2126,11 +2138,11 @@ def generate_content_type_moderation_action_figure1(data, company):
                                 content_type_moderation_action_totals[(content_type, moderation_action)] += count
 
     # Prepare data for DataFrame
-    data_for_df = {'Content Type': [], 'Moderation Action': [], 'N# Actions': []}
+    data_for_df = {'Content Type': [], 'Moderation Action': [], 'Number of Moderated Content': []}
     for (content_type, moderation_action), total_actions in content_type_moderation_action_totals.items():
         data_for_df['Content Type'].append(content_type)
         data_for_df['Moderation Action'].append(moderation_action)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_content_type_moderation_action = pd.DataFrame(data_for_df).dropna()
 
@@ -2170,7 +2182,7 @@ def generate_content_type_moderation_action_figure1(data, company):
     df_content_type_moderation_action['Moderation Action'] = df_content_type_moderation_action['Moderation Action'].map(visibility_descriptions)
 
     # Pivot the DataFrame
-    pivot_df = df_content_type_moderation_action.pivot(index='Content Type', columns='Moderation Action', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_content_type_moderation_action.pivot(index='Content Type', columns='Moderation Action', values='Number of Moderated Content').fillna(0).reset_index()
 
     wrapped_columns = [textwrap.fill(col, width=15) for col in pivot_df.columns]
 
@@ -2230,11 +2242,11 @@ def generate_moderation_action_automation_status_figure1(data, company):
                             moderation_action_automation_status_totals[(moderation_action, automation_status)] += automation_detection
 
     # Prepare data for DataFrame
-    data_for_df = {'Moderation Action': [], 'Automation Status': [], 'N# Actions': []}
+    data_for_df = {'Moderation Action': [], 'Automation Status': [], 'Number of Moderated Content': []}
     for (moderation_action, automation_status), total_actions in moderation_action_automation_status_totals.items():
         data_for_df['Moderation Action'].append(moderation_action)
         data_for_df['Automation Status'].append(automation_status)
-        data_for_df['N# Actions'].append(total_actions)
+        data_for_df['Number of Moderated Content'].append(total_actions)
 
     df_moderation_action_automation_status = pd.DataFrame(data_for_df).dropna()
 
@@ -2257,7 +2269,7 @@ def generate_moderation_action_automation_status_figure1(data, company):
 
 
     # Pivot the DataFrame
-    pivot_df = df_moderation_action_automation_status.pivot(index='Moderation Action', columns='Automation Status', values='N# Actions').fillna(0).reset_index()
+    pivot_df = df_moderation_action_automation_status.pivot(index='Moderation Action', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Plotting the table graph
     fig, ax = plt.subplots(figsize=(7, 6))  # Adjust the figsize as needed
