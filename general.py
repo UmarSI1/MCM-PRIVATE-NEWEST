@@ -1460,7 +1460,7 @@ def plot_normalized_automation_status(data):
     pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Normalize the values
-    pivot_df.iloc[:, 1:] = pivot_df.iloc[:, 1:].div(pivot_df.iloc[:, 1:].sum(axis=1), axis=0)
+    #pivot_df.iloc[:, 1:] = pivot_df.iloc[:, 1:].div(pivot_df.iloc[:, 1:].sum(axis=1), axis=0)
 
 
     # Plotting the normalized data
@@ -1468,7 +1468,7 @@ def plot_normalized_automation_status(data):
     pivot_df.set_index('Company').plot(kind='bar', stacked=True, ax=ax)
     ax.set_xlabel('Company')
     ax.set_ylabel('Normalized Count')
-    ax.set_title('Normalized Automation Status by Company')
+    #ax.set_title('Normalized Automation Status by Company')
     ax.legend(title='Automation Status', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
     plt.xticks(rotation=45)
@@ -1584,7 +1584,7 @@ def plot_harm_content_type(data):
     pivot_df_chart = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='Number of Moderated Content').fillna(0).reset_index()
     
     # Normalize the values
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
+    #pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
 
     # Plotting the normalized data
     pivot_df_chart.set_index('Harm').plot(kind='bar', stacked=True)
@@ -1668,7 +1668,7 @@ def plot_harm_content_type_normalized(data):
     pivot_df_chart = df_harm_content_type.pivot(index='Harm', columns='Content Type', values='Number of Moderated Content').fillna(0).reset_index()
     
     # Normalize the values
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
+    #pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
 
     # Plotting the normalized data
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -1944,7 +1944,7 @@ def plot_harm_automation_status_two(data):
     pivot_df_chart = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Normalize the values
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
+    #pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0)
 
     # Plotting the normalized data
     fig, ax = plt.subplots(figsize=(10, 6))
