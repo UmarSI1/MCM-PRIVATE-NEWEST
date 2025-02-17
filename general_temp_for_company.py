@@ -1926,7 +1926,7 @@ def plot_harm_automation_status1_normalized(data, company):
     pivot_df_chart = df_harm_automation_status.pivot(index='Harm', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()  # <-- Changed this line
 
     # Normalize the values and fill NaNs resulting from empty rows with 0
-    pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0)  # <-- Changed this line
+    #pivot_df_chart.iloc[:, 1:] = pivot_df_chart.iloc[:, 1:].div(pivot_df_chart.iloc[:, 1:].sum(axis=1), axis=0).fillna(0)  # <-- Changed this line
 
     # Plotting the normalized data
     pivot_df_chart.set_index('Harm').plot(kind='bar', stacked=True, ax=ax)
