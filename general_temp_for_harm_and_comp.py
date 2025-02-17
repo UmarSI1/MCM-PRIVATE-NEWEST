@@ -145,7 +145,7 @@ def plot_acc_totals_company_harm(data, company, harm):
     automation_detection_totals['Total'] = total_sum_all_automation_detection  # Append the total sum
 
     # Create a DataFrame for the automation status totals
-    automation_detection_data = {'Automation Detection': list(automation_detection_totals.keys()),
+    automation_detection_data = {'Automation Type': list(automation_detection_totals.keys()),
                               'Number of Moderated Content': list(automation_detection_totals.values())}
     df_automation_detection = pd.DataFrame(automation_detection_data).dropna()
 
@@ -156,7 +156,7 @@ def plot_acc_totals_company_harm(data, company, harm):
     }
 
     # Rename the automation statuses in the DataFrame
-    df_automation_detection['Automation Detection'] = df_automation_detection['Automation Detection'].map(automated_detection_cleaned).fillna('Total')
+    df_automation_detection['Automation Type'] = df_automation_detection['Automation Type'].map(automated_detection_cleaned).fillna('Total')
 
     # Plotting the table
     fig3, ax = plt.subplots()
@@ -1373,19 +1373,18 @@ def plot_automation_status_table_general3(data, company, harm):
 
 
 def plot_normalized_automation_status3(data, company, harm):
-    """ Plot the normalized counts of each automation status per company as a stacked bar chart. """
+    """ Plot the normalized counts of each automation status per company as a stacked bar chart with percentage labels. """
     automation_status_totals_per_company = {company: {} for company in data.keys()}
     
     # Sum all numbers for each automation status per company
-    #for company, harms in data.items():
     for content_type in data[company][harm].values():
         for moderation_action in content_type.values():
             for automation_status, count in moderation_action.items():
-                        if automation_status not in automation_status_totals_per_company[company]:
-                            automation_status_totals_per_company[company][automation_status] = 0
-                        for automation_detection in count.values():
-                            if pd.notna(automation_detection):  # Check if the count is not NaN
-                                automation_status_totals_per_company[company][automation_status] += automation_detection
+                if automation_status not in automation_status_totals_per_company[company]:
+                    automation_status_totals_per_company[company][automation_status] = 0
+                for automation_detection in count.values():
+                    if pd.notna(automation_detection):  # Check if the count is not NaN
+                        automation_status_totals_per_company[company][automation_status] += automation_detection
     
     # Prepare data for DataFrame
     data_for_df = {'Company': [], 'Automation Status': [], 'Number of Moderated Content': []}
@@ -1411,19 +1410,25 @@ def plot_normalized_automation_status3(data, company, harm):
     pivot_df = df_automation_status_per_company.pivot(index='Company', columns='Automation Status', values='Number of Moderated Content').fillna(0).reset_index()
 
     # Normalize the values
-    pivot_df.iloc[:, 1:] = pivot_df.iloc[:, 1:].div(pivot_df.iloc[:, 1:].sum(axis=1), axis=0)
+    pivot_df.iloc[:, 1:] = pivot_df.iloc[:, 1:].div(pivot_df.iloc[:, 1:].sum(axis=1), axis=0) * 100  # Convert to percentages
 
     # Plotting the normalized data
     fig, ax = plt.subplots(figsize=(10, 6))
     pivot_df.set_index('Company').plot(kind='bar', stacked=True, ax=ax)
     ax.set_xlabel('Company')
-    ax.set_ylabel('Normalized Count')
+    ax.set_ylabel('Percentage')
     ax.set_title('Normalized Automation Status by Company')
     ax.legend(title='Automation Status', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
     plt.xticks(rotation=45)
 
+    # Add percentage labels to the bars
+    for container in ax.containers:
+        labels = [f'{v:.1f}%' if v > 0 else '' for v in container.datavalues]
+        ax.bar_label(container, labels=labels, label_type='center')
+
     return pivot_df
+
 
 
 
