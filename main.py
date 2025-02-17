@@ -570,7 +570,7 @@ def main():
         )
 
         # Add text labels for the companies above the bars
-        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12).encode(
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='white').encode(
             x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
             y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
             detail='Company:N',
@@ -650,6 +650,8 @@ def main():
         # })
 
         # Process Data: Compute average moderation time (in hours) per category for both companies
+
+
         acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
         user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean()
 
@@ -676,12 +678,12 @@ def main():
         )
 
         # Add text labels above bars showing company names
-        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12).encode(
-            x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
-            y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),
-            text=alt.Text('Company:N'),  # Display company name
-            xOffset='Company:N'  # Align text with corresponding bars
-        )
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='white').encode(
+        x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),
+        text=alt.Text('Company:N'),  # Display company name
+        xOffset='Company:N'  # Align text with corresponding bars
+    )
 
         # Combine bars and text
         chart_four = (bars + text).properties(
@@ -1022,99 +1024,61 @@ def main():
     
     with col1:
         st.altair_chart(chart_three, use_container_width=True)
-
     with col2:
-
-        #fix try expect to trigger correctly
-        try:
-            # Two companies working
-            if not company_selected or not second_company_selected:
-               # print("two companies selected")
-                raise NameError("Company selection is not valid.")
-            
+        
+        def format_time(value):
+            return f"{value:.0f} hours" if value <= 24 else f"{(value / 24):.1f} days"
+        
+        if company_selected and second_company_selected:
             st.write(
                 f"<span style='font-size:14px;'>"
-                f"<span style='color:red; font-weight:bold;'>Automated</span> ({company_selected}): {acc_total4:.0f} ┃ "
-                f"<span style='color:green; font-weight:bold;'>Manual</span> ({company_selected}): {user_total4:.0f} ┃ "
-                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_company_selected}): {acc_total4_second:.0f} ┃ "
-                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_company_selected}): {user_total4_second:.0f} "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({company_selected}): {format_time(acc_total4)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({company_selected}): {format_time(user_total4)} ┃ "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_company_selected}): {format_time(acc_total4_second)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_company_selected}): {format_time(user_total4_second)} "
                 f"</span>",
                 unsafe_allow_html=True
             )
-        except NameError:
-            try:
-                # Two harms working
-                if not harm_selected or not second_harm_selected:
-                    raise NameError("Harm selection is not valid.")
-                
-                st.write(
-                    f"<span style='font-size:14px;'>"
-                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected}): {acc_total4:.0f} ┃ "
-                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected}): {user_total4:.0f} ┃ "
-                    f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected}): {acc_total4_second:.0f} ┃ "
-                    f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected}): {user_total4_second:.0f} "
-                    f"</span>",
-                    unsafe_allow_html=True
-                )
-            except NameError:
-                try:
-                    harm_version = category_descriptions.get(harm_selected, "UNKNOWN HARM")
-                    
-                    # One company and one harm working
-                    st.write(
-                        f"<span style='font-size:14px;'>"
-                        f"<span style='color:red; font-weight:bold;'>Automated Results: </span> {acc_total4:.0f} ┃ "
-                        f"<span style='color:green; font-weight:bold;'>Manual Results:</span> {user_total4:.0f} ┃ "
-                        f"<span style='color:green; font-weight:bold;'>For:</span> {company_selected} & {harm_version}"
-                        f"</span>",
-                        unsafe_allow_html=True
-                    )
-                except NameError:
-                    st.write("Error: No valid company or harm data available.")
+        
+        elif harm_selected and second_harm_selected:
 
-        st.altair_chart(chart_four, use_container_width=True)
-
-
-
-        #    # Display the chart
-        # if acc_total4 > 24 and user_total4 > 24:
-        #     formatted_number1 = format(int(acc_total4/24), ",")
-        #     formatted_number2 = format(int(user_total4/24), ",")
-        #     st.write(
-        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
-        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
-        #         unsafe_allow_html=True)
-        #     st.altair_chart(chart_four, use_container_width=True)
-        # elif acc_total4 < 24 and user_total4 > 24:
-        #     formatted_number1 = format(int(acc_total4), ",")
-        #     formatted_number2 = format(int(user_total4/24), ",")
-        #     st.write(
-        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
-        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Days ",
-        #         unsafe_allow_html=True)
-        #     st.altair_chart(chart_four, use_container_width=True)
-        # elif acc_total4 > 24 and user_total4 < 24:
-        #     formatted_number1 = format(int(acc_total4/24), ",")
-        #     formatted_number2 = format(int(user_total4), ",")
-        #     st.write(
-        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Days "
-        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
-        #         unsafe_allow_html=True)
-        #     st.altair_chart(chart_four, use_container_width=True)
-        # else:
-        #     formatted_number1 = format(int(acc_total4), ",")
-        #     formatted_number2 = format(int(user_total4), ",")
-        #     st.write(
-        #         f"<span style='color:red; font-weight:bold;'>Automated Average Time</span>: {formatted_number1} Hrs "
-        #         f"<span style='color:green; font-weight:bold;'>Manual Average Time</span>: {formatted_number2} Hrs ",
-        #         unsafe_allow_html=True)
-        #     st.altair_chart(chart_four, use_container_width=True)
-
-        #st.altair_chart(chart_four, use_container_width=True)
+            st.write(acc_total4)
+            st.write(user_total4)
+            st.write(acc_total4_second)
+            st.write(user_total4_second)
+            st.write(second_harm_selected)
+            st.write(second_harm_selected)
             
-    #st.markdown("---")
+            st.write(
+                f"<span style='font-size:14px;'>"
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected}): {format_time(acc_total4)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected}): {format_time(user_total4)} ┃ "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected}): {format_time(acc_total4_second)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected}): {format_time(user_total4_second)} "
+                f"</span>",
+                unsafe_allow_html=True
+            )
+        
+        elif company_selected and harm_selected:
+            harm_version = category_descriptions.get(harm_selected, "UNKNOWN HARM")
+            
+            st.write(acc_total4)
+            st.write(user_total4)
+            st.write(company_selected)
+            st.write(harm_version)
 
-    
+            st.write(
+                f"<span style='font-size:14px;'>"
+                f"<span style='color:red; font-weight:bold;'>Automated Results: </span> {format_time(acc_total4)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual Results:</span> {format_time(user_total4)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>For:</span> {company_selected} & {harm_version}"
+                f"</span>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.write("Error: No valid company or harm data available.")
+        
+        st.altair_chart(chart_four, use_container_width=True)
 
 
 
@@ -1172,9 +1136,42 @@ def main():
         st.markdown("<h3 style='text-decoration: underline;'>Select a Specific Company</h3>", unsafe_allow_html=True)
         selected_company = st.selectbox("Choose a Company:", [None] + List_of_companies, disabled=disable_others)
 
+    # with harm_col:
+    #      st.markdown("<h3 style='text-decoration: underline;'>Select a Specific Harm</h3>", unsafe_allow_html=True)
+    #      selected_harm = st.selectbox("Choose a Harm:", [None] + List_of_harms, disabled=disable_others)
+
     with harm_col:
         st.markdown("<h3 style='text-decoration: underline;'>Select a Specific Harm</h3>", unsafe_allow_html=True)
-        selected_harm = st.selectbox("Choose a Harm:", [None] + List_of_harms, disabled=disable_others)
+        
+        category_descriptionssss = {
+            'STATEMENT_CATEGORY_SCOPE_OF_PLATFORM_SERVICE': 'PLATFORM SCOPE',
+            'STATEMENT_CATEGORY_DATA_PROTECTION_AND_PRIVACY_VIOLATIONS': 'GDPR VIOLATION',
+            'STATEMENT_CATEGORY_PORNOGRAPHY_OR_SEXUALIZED_CONTENT': 'PORN/SEX CONTENT',
+            'STATEMENT_CATEGORY_ILLEGAL_OR_HARMFUL_SPEECH': 'ILLEGAL/HARMFUL SPEECH',
+            'STATEMENT_CATEGORY_VIOLENCE': 'VIOLENCE',
+            'STATEMENT_CATEGORY_SCAMS_AND_FRAUD': 'SCAMS/FRAUD',
+            'STATEMENT_CATEGORY_UNSAFE_AND_ILLEGAL_PRODUCTS': 'ILLEGAL PRODUCTS',
+            'STATEMENT_CATEGORY_NON_CONSENSUAL_BEHAVIOUR': 'NON-CONSENSUAL BEHAVIOUR',
+            'STATEMENT_CATEGORY_PROTECTION_OF_MINORS': 'PROTECT MINORS',
+            'STATEMENT_CATEGORY_INTELLECTUAL_PROPERTY_INFRINGEMENTS': 'COPYRIGHT',
+            'STATEMENT_CATEGORY_NEGATIVE_EFFECTS_ON_CIVIC_DISCOURSE_OR_ELECTIONS': 'NEGATIVE EFFECTS ON ELECTIONS',
+            'STATEMENT_CATEGORY_RISK_FOR_PUBLIC_SECURITY': 'RISK TO PUBLIC SECURITY',
+            'STATEMENT_CATEGORY_ANIMAL_WELFARE': 'ANIMAL WELFARE',
+            'STATEMENT_CATEGORY_SELF_HARM': 'SELF HARM'
+        }
+
+        # Create a mapping for display
+        harm_display_map = {harm: category_descriptionssss.get(harm, harm) for harm in List_of_harms}
+
+        # Reverse mapping to get back the original harm key
+        display_options = [None] + list(harm_display_map.values())
+        selected_display_harm = st.selectbox("Choose a Harm:", display_options, disabled=disable_others)
+
+        # Convert selected display harm back to its key
+        selected_harm = next((key for key, value in harm_display_map.items() if value == selected_display_harm), None)
+
+
+
     ####################################################
 
 
@@ -1275,7 +1272,7 @@ def main():
             with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig19, use_container_width=True)
         with col1:
-            with st.expander("Analysis of Harm Category vs. Type of Moderation (%)", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig20, use_container_width=True)
         with col2:
             with st.expander("Analysis of Harm Category vs. Type of Moderation Action", expanded=False):
@@ -1296,7 +1293,7 @@ def main():
     ########################################################################################################
     elif selected_company and selected_harm:
         st.markdown("---")
-        st.subheader(f"Analysis for {selected_company} and {selected_harm}")
+        st.subheader(f"Analysis for {selected_company} and {selected_display_harm}")
         col1, col2 = st.columns(2)
 
 
@@ -1477,7 +1474,7 @@ def main():
             with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig19, use_container_width=True)
         with col1:
-            with st.expander("Analysis of Harm Category vs. Type of Moderation (%)", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation", expanded=False):
                 st.dataframe(fig20, use_container_width=True)
         with col2:
             with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted", expanded=False):
@@ -1496,7 +1493,7 @@ def main():
     ########################################################################################################
     elif selected_harm:
         st.markdown("---")
-        st.subheader(f"Analysis for {selected_harm}")
+        st.subheader(f"Analysis for {selected_display_harm}")
         col1, col2 = st.columns(2)
 
         fig1 = plot_acc_totals_per_company_harm(data, selected_harm)
@@ -1565,7 +1562,7 @@ def main():
             with st.expander("Analysis of Harm Category vs. Type of Moderation for harm", expanded=False):
                 st.dataframe(fig15, use_container_width=True)
         with col2:
-            with st.expander("Analysis of Harm Category vs. Type of Moderation (%) for harm", expanded=False):
+            with st.expander("Analysis of Harm Category vs. Type of Moderation for harm", expanded=False):
                 st.dataframe(fig16, use_container_width=True)
         with col1:
             with st.expander("Analysis of Moderated Content Type vs. Type of Moderation Adopted for harm", expanded=False):
