@@ -523,6 +523,8 @@ def main():
             'Manual': [result[1] for result in results_second_company_selected],
             'Company': second_company_selected
         })
+        
+        
 
         df_combined = pd.concat([df_company_1.melt(['Dates', 'Company'], var_name='Type', value_name='DAILY FLAGGED CONTENT'),
                                 df_company_2.melt(['Dates', 'Company'], var_name='Type', value_name='DAILY FLAGGED CONTENT')])
@@ -625,13 +627,20 @@ def main():
         #fix the values not correct (think), alyout is working
         # ---------------------------------------------------------------------------------------------------
 
-
+        # If you want to avoid NaN values after division, you can use a fill method:
 
         acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
         user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean()
 
         acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean()
         user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean()
+        
+        
+        acc_total4 = 0 if pd.isna(acc_total4) else acc_total4
+        user_total4 = 0 if pd.isna(user_total4) else user_total4
+        acc_total4_second = 0 if pd.isna(acc_total4_second) else acc_total4_second
+        user_total4_second = 0 if pd.isna(user_total4_second) else user_total4_second
+        
 
 
         # Create DataFrame with the totals for both companies
@@ -810,6 +819,11 @@ def main():
 
         acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean()
         user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean()
+        
+        acc_total4 = 0 if pd.isna(acc_total4) else acc_total4
+        user_total4 = 0 if pd.isna(user_total4) else user_total4
+        acc_total4_second = 0 if pd.isna(acc_total4_second) else acc_total4_second
+        user_total4_second = 0 if pd.isna(user_total4_second) else user_total4_second
         
 
         # Create DataFrame for visualization
@@ -1024,9 +1038,6 @@ def main():
             # Get the readable category descriptions
             harm_selected_label = category_descriptions.get(harm_selected, harm_selected)
             second_harm_selected_label = category_descriptions.get(second_harm_selected, second_harm_selected)
-
-            st.write(acc_total4_second)
-            st.write(user_total4_second)
 
             st.write(
                 f"<span style='font-size:14px;'>"
