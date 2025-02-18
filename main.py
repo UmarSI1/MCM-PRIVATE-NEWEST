@@ -405,7 +405,8 @@ def main():
     #getting all the dates between the user chosen initial date and final date
     all_dates_between_initial_final_dates = [(date_initial + timedelta(days=i)).strftime("%Y-%m-%d")  for i in range((date_final - date_initial).days + 1) if (date_initial + timedelta(days=i)).strftime("%Y-%m-%d") in datasets]
 
-
+#dataet loaded plot 1 2
+#dataset loaded 2 for plot 3 adn 4
 
     def append_historical1(date):
         return f"{date}_historical1"
@@ -475,10 +476,6 @@ def main():
             results = list(executor.map(process_data, datasets_loaded))
             results2 = list(executor.map(process_data, datasets_loaded2))
 
-          #  print("results for first company ", results)
-          #  print("results2 for first company", results2)
-          #  print("---")
-
 
          #-------------------------------------
         # Repeat the process with your second set of data #for harm 2
@@ -489,9 +486,6 @@ def main():
         with concurrent.futures.ThreadPoolExecutor() as executor:
             results_second_harm_selected = list(executor.map(process_data_second, datasets_loaded))
             results2_second_harm_selected = list(executor.map(process_data_second, datasets_loaded2))
-
-          #  print("results_second_harm_selected", results_second_harm_selected)
-           # print("results2_second_harm_selected", results2_second_harm_selected)
 
 
 
@@ -631,25 +625,6 @@ def main():
         #fix the values not correct (think), alyout is working
         # ---------------------------------------------------------------------------------------------------
 
-        # Calculate the average for each category and company
-
-        # df_company_1 = pd.DataFrame({
-        # 'Dates': all_dates_between_initial_final_dates,
-        # 'Automated': [result[0] for result in results],
-        # 'Manual': [result[1] for result in results],
-        # 'Company': company_selected
-        # })
-
-        # df_company_2 = pd.DataFrame({
-        #     'Dates': all_dates_between_initial_final_dates,
-        #     'Automated': [result[0] for result in results_second_company_selected],
-        #     'Manual': [result[1] for result in results_second_company_selected],
-        #     'Company': second_company_selected
-
-
-        # })
-
-        # Process Data: Compute average moderation time (in hours) per category for both companies
 
 
         acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
@@ -718,6 +693,8 @@ def main():
             'Harm': second_harm_selected_label
         })
 
+        print("original DF2", df_company_2)
+
         df_combined = pd.concat([df_company_1.melt(['Dates', 'Harm'], var_name='Type', value_name='DAILY FLAGGED CONTENT'),
                                 df_company_2.melt(['Dates', 'Harm'], var_name='Type', value_name='DAILY FLAGGED CONTENT')])
 
@@ -785,11 +762,15 @@ def main():
         df_company_1['Automated'] = df_company_1['Automated'] / pd.Series([result[0] for result in results]).replace(0, pd.NA)
         df_company_1['Manual'] = df_company_1['Manual'] / pd.Series([result[1] for result in results]).replace(0, pd.NA)
         df_company_1 = df_company_1.fillna(0)
+        
+        print("DF1 third chart", df_company_1)
+        
+        
 
         df_company_2 = pd.DataFrame({
             'Dates': all_dates_between_initial_final_dates,
-            'Automated': [result[0] / 60 for result in results_second_harm_selected],
-            'Manual': [result[1] / 60 for result in results_second_harm_selected],
+            'Automated': [result[0] / 60 for result in results2_second_harm_selected],
+            'Manual': [result[1] / 60 for result in results2_second_harm_selected],
             'Harm': second_harm_selected_label
         })
 
@@ -819,20 +800,17 @@ def main():
 
         # Calculate averages for one company
         #working layout not just need to fix values
-
+    
+        
 
         # Process Data: Compute average moderation time (in hours) for both harms
         acc_total4 = df_company_1['Automated'][df_company_1['Automated'] != 0].mean()
         user_total4 = df_company_1['Manual'][df_company_1['Manual'] != 0].mean()
+        
 
         acc_total4_second = df_company_2['Automated'][df_company_2['Automated'] != 0].mean()
         user_total4_second = df_company_2['Manual'][df_company_2['Manual'] != 0].mean()
-
-        # Handle NaN cases (replace with 0 if no data available)
-        acc_total4 = 0 if pd.isna(acc_total4) else acc_total4
-        user_total4 = 0 if pd.isna(user_total4) else user_total4
-        acc_total4_second = 0 if pd.isna(acc_total4_second) else acc_total4_second
-        user_total4_second = 0 if pd.isna(user_total4_second) else user_total4_second
+        
 
         # Create DataFrame for visualization
         df_bar = pd.DataFrame({
@@ -931,6 +909,8 @@ def main():
 
        #grph 4 values showing correct
        # ---------------------------------------------------------------------------------------------------
+
+
         #graph4
         acc_total4 = df_three['Automated'][df_three['Automated'] != 0].mean()
         user_total4 = df_three['Manual'][df_three['Manual'] != 0].mean()
@@ -1041,32 +1021,25 @@ def main():
             )
         
         elif harm_selected and second_harm_selected:
+            # Get the readable category descriptions
+            harm_selected_label = category_descriptions.get(harm_selected, harm_selected)
+            second_harm_selected_label = category_descriptions.get(second_harm_selected, second_harm_selected)
 
-            st.write(acc_total4)
-            st.write(user_total4)
             st.write(acc_total4_second)
             st.write(user_total4_second)
-            st.write(second_harm_selected)
-            st.write(second_harm_selected)
-            
+
             st.write(
                 f"<span style='font-size:14px;'>"
-                f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected}): {format_time(acc_total4)} ┃ "
-                f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected}): {format_time(user_total4)} ┃ "
-                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected}): {format_time(acc_total4_second)} ┃ "
-                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected}): {format_time(user_total4_second)} "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({harm_selected_label}): {format_time(acc_total4)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({harm_selected_label}): {format_time(user_total4)} ┃ "
+                f"<span style='color:red; font-weight:bold;'>Automated</span> ({second_harm_selected_label}): {format_time(acc_total4_second)} ┃ "
+                f"<span style='color:green; font-weight:bold;'>Manual</span> ({second_harm_selected_label}): {format_time(user_total4_second)} "
                 f"</span>",
                 unsafe_allow_html=True
             )
         
         elif company_selected and harm_selected:
             harm_version = category_descriptions.get(harm_selected, "UNKNOWN HARM")
-            
-            st.write(acc_total4)
-            st.write(user_total4)
-            st.write(company_selected)
-            st.write(harm_version)
-
             st.write(
                 f"<span style='font-size:14px;'>"
                 f"<span style='color:red; font-weight:bold;'>Automated Results: </span> {format_time(acc_total4)} ┃ "
