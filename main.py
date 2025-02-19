@@ -566,7 +566,7 @@ def main():
         )
 
         # Add text labels for the companies above the bars
-        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='white').encode(
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='black').encode(
             x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
             y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
             detail='Company:N',
@@ -662,7 +662,7 @@ def main():
         )
 
         # Add text labels above bars showing company names
-        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='white').encode(
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='black').encode(
         x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('Average Moderation Time (Hrs):Q', title='AVERAGE MODERATION TIME (HRS)'),
         text=alt.Text('Company:N'),  # Display company name
@@ -744,7 +744,7 @@ def main():
         )
 
         # Add text labels for the companies above the bars
-        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='white').encode(
+        text = alt.Chart(df_totals).mark_text(dy=-15, fontSize=12, color='black').encode(
             x=alt.X('Category:N', title='', axis=alt.Axis(labelAngle=0)),
             y=alt.Y('Total Harm Count:Q', title='TOTAL FLAGGED CONTENT'),
             detail='Harm:N',
@@ -1021,7 +1021,7 @@ def main():
     with col2:
         
         def format_time(value):
-            return f"{value:.0f} hours" if value <= 24 else f"{(value / 24):.1f} days"
+            return f"{value:.0f} Hrs" if value <= 24 else f"{(value / 24):.1f} Days"
         
         if company_selected and second_company_selected:
             st.write(
