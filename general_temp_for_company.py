@@ -148,6 +148,10 @@ def sum_company(data, company):
 
 ########################################################################################################################
 
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+
 def plot_acc_totals_company(data, company):
     """ Sum all numbers for each ACC automation detection status """
     automation_detection_totals = {}
@@ -155,34 +159,37 @@ def plot_acc_totals_company(data, company):
 
     # Sum all numbers for each automation status across all companies
     for harm in data[company].values():
-            for content_type in harm.values():
-                for moderation_action in content_type.values():
-                    for automation_status in moderation_action.values():
-                        for automation_detection, count in automation_status.items():
-                            
-                            if automation_detection not in automation_detection_totals:
-                                 
-                                automation_detection_totals[automation_detection] = 0
-                        
-                            automation_detection_totals[automation_detection] += count
-                            total_sum_all_automation_detection += count  # Accumulate the total sum
+        for content_type in harm.values():
+            for moderation_action in content_type.values():
+                for automation_status in moderation_action.values():
+                    for automation_detection, count in automation_status.items():
+                        if automation_detection not in automation_detection_totals:
+                            automation_detection_totals[automation_detection] = 0
+                        automation_detection_totals[automation_detection] += count
+                        total_sum_all_automation_detection += count  # Accumulate the total sum
 
     # Add the total to the data after the loop
     automation_detection_totals['Total'] = total_sum_all_automation_detection  # Append the total sum
 
     # Create a DataFrame for the automation status totals
-    automation_detection_data = {'Automation Type': list(automation_detection_totals.keys()),
-                              'Number of Moderated Content': list(automation_detection_totals.values())}
+    automation_detection_data = {
+        'Automation Type': list(moderation_action.keys()),
+        'Number of Moderated Content': list(automation_detection_totals.values())
+    }
     df_automation_detection = pd.DataFrame(automation_detection_data).dropna()
 
-    # Define automation decision descriptions for mapping
-    automated_detection_cleaned = {
-        'Yes': 'ACC flag',
-        'No': 'User flag'
+    category_descriptions = {
+
+        'AUTOMATED_DECISION_FULLY': 'Fully Automated',
+        'AUTOMATED_DECISION_NOT_AUTOMATED': 'Not Automated',
+        'AUTOMATED_DECISION_PARTIALLY': 'Partially Automated'
+
     }
 
-    # Rename the automation statuses in the DataFrame
-    df_automation_detection['Automation Detection'] = df_automation_detection['Automation Type'].map(automated_detection_cleaned).fillna('Total')
+    # Rename the content type categories in the DataFrame
+    df_automation_detection['Automation Type'] = df_automation_detection['Automation Type'].map(category_descriptions)
+
+
 
     # Plotting the table
     fig3, ax = plt.subplots()
@@ -190,20 +197,24 @@ def plot_acc_totals_company(data, company):
     ax.axis('off')
 
     # Create the table
-    table = ax.table(cellText=df_automation_detection.values, colLabels=df_automation_detection.columns, cellLoc='center', loc='center', bbox=[0, 0, 1, 1])
+    table = ax.table(
+        cellText=df_automation_detection.values,
+        colLabels=df_automation_detection.columns,
+        cellLoc='center',
+        loc='center',
+        bbox=[0, 0, 1, 1]
+    )
 
     formatter = mtick.FuncFormatter(lambda x, _: f'{x:,.0f}')
     for i in range(1, len(df_automation_detection.columns)):
         for key, cell in table.get_celld().items():
             if key[0] != 0 and key[1] == i:  # Exclude the header row
-              #  cell.get_text().set_text(formatter(int(cell.get_text().get_text())))
                 text = cell.get_text().get_text()
                 try:
                     value = int(float(text))
                     cell.get_text().set_text(formatter(value))
                 except ValueError:
                     pass  # or handle the error as needed
-
 
     # Set font size
     table.auto_set_font_size(False)
