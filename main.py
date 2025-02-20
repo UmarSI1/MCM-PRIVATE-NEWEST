@@ -183,9 +183,6 @@ def main():
 
 ##############################################################################################################  --- Historical Analysis --- ##################################################################################################################
 
-    st.write('<h2 style="text-align: center; text-decoration: underline;">Historical Analysis</h2>', unsafe_allow_html=True)
-
-
     with st.expander("Harm definition's according to the DSA documentation", expanded=False):
     
         question = st.selectbox(
@@ -224,13 +221,13 @@ def main():
             st.write("This category includes: Insufficient information on traders, Regulated goods and services, Dangerous toys.")
         elif question == "Violence":
             st.write("This category includes: Coordinated harm, Gender-based violence, Human exploitation, Human trafficking, Incitement to violence and/or hatred.")
-
-
-
+    
+    
+    st.write('<h2 style="text-align: center; text-decoration: underline;">Historical Analysis</h2>', unsafe_allow_html=True)
 
     selected_option = st.radio(
         "In this historical analysis you can select one of the following options",
-        options=["Evaluate a certain company or Harm category", "Evaluate two companies for the same harm category", "Evaluate two harm categories for the company"],
+        options=["Evaluate a certain company or harm category", "Evaluate two companies for the same harm category", "Evaluate two harm categories for the company"],
         index=0
     )
 
@@ -713,7 +710,7 @@ def main():
             color=alt.Color('Type:N', scale=alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])),
             strokeDash='Harm:N'
         ).properties(
-            title='Comparison of ACC Flag Count for Two Companies'
+            title='Comparison of ACC Flag Count for Two Harms'
         )
 
 
@@ -799,7 +796,7 @@ def main():
             color=alt.Color('Type:N', scale=alt.Scale(domain=['Automated', 'Manual'], range=['red', 'green'])),
             strokeDash='Harm:N'
         ).properties(
-            title='ACC VS Manual Moderation Time (Detection + Decision Periods) for Two Companies'
+            title='ACC VS Manual Moderation Time (Detection + Decision Periods) for Two Harms'
         )
 
 
