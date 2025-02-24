@@ -258,7 +258,7 @@ def main():
             filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
             st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
             date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
-            initial_date_str = date_initial
+            #initial_date_str = date_initial
       
         with date_final:
             filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
