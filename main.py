@@ -237,10 +237,10 @@ def main():
     data = [datetime.strptime(d, "%Y-%m-%d") for d in datasets]
 
     #setting the initial date to a defult of 5 days ago and formatting it to YYYY-MM-DD
-    #today = datetime.now().date()
-    #initial_date = today - timedelta(days=20)
-    #initial_date_str = initial_date.strftime("%Y-%m-%d")
-    initial_date_str = data[-2]
+    today = datetime.now().date()
+    initial_date = today - timedelta(days=4)
+    initial_date_str = initial_date.strftime("%Y-%m-%d")
+
 
 
 
@@ -259,6 +259,7 @@ def main():
             st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
             date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
             initial_date_str = date_initial
+      
         with date_final:
             filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
