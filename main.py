@@ -238,7 +238,7 @@ def main():
 
     #setting the initial date to a defult of 5 days ago and formatting it to YYYY-MM-DD
     today = datetime.now().date()
-    initial_date = today - timedelta(days=4)
+    initial_date = today - timedelta(days=10)
     initial_date_str = initial_date.strftime("%Y-%m-%d")
 
 
