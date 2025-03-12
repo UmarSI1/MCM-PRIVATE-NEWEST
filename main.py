@@ -247,6 +247,7 @@ def main():
     second_company_selected = None
     second_harm_selected = None
 
+
     if selected_option == "Evaluate two companies for the same harm category":
         second_harm_selected = None
         #st.write("You selected 'Company'.")
@@ -255,17 +256,36 @@ def main():
         date_initial, date_final, company_intial,  second_company, harm_intial = st.columns(5)
 
         with date_initial:
-            filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
-            date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
-            #initial_date_str = date_initial
-      
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
+            
+            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
+            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
+            
+            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+            date_initial = datetime.combine(date_initial, datetime.min.time())
+
         with date_final:
-            filtered_dates_for_final_date_input = [date for date in datasets if date > date_initial.strftime("%Y-%m-%d")]
-           # filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
-        
+            
+            # Ensure we have valid dates after date_initial
+            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
+            
+            if filtered_dates_for_final_date_input:
+                min_final_date = min(filtered_dates_for_final_date_input)
+                max_final_date = max(filtered_dates_for_final_date_input)
+            else:
+                min_final_date = date_initial  # Fallback to initial date if no valid final dates
+                max_final_date = date_initial
+
+            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            date_final = datetime.combine(date_final, datetime.min.time())
+            
+
+
+
+
+                
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select Company 01:</h4>", unsafe_allow_html=True)
             company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
@@ -304,16 +324,31 @@ def main():
 
 
         with date_initial:
-            #Filter the datasets to only include dates that are less than or equal to the initial date for the initial date input and the same but opposite for final input
-            filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
-            date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
             
+            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
+            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
+            
+            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+            date_initial = datetime.combine(date_initial, datetime.min.time())
+
         with date_final:
-            filtered_dates_for_final_date_input = [date for date in datasets if date > date_initial.strftime("%Y-%m-%d")]
-            #filtered_dates_for_final_date_input = [date for date in datasets if date > initial_date_str]
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
+            
+            # Ensure we have valid dates after date_initial
+            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
+            
+            if filtered_dates_for_final_date_input:
+                min_final_date = min(filtered_dates_for_final_date_input)
+                max_final_date = max(filtered_dates_for_final_date_input)
+            else:
+                min_final_date = date_initial  # Fallback to initial date if no valid final dates
+                max_final_date = date_initial
+
+            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            date_final = datetime.combine(date_final, datetime.min.time())
+            
         
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Company:</h4>", unsafe_allow_html=True)
@@ -362,17 +397,31 @@ def main():
         date_initial, date_final, company_intial, harm_intial = st.columns(4)
 
         with date_initial:
-            #Filter the datasets to only include dates that are less than or equal to the initial date for the initial date input and the same but opposite for final input
-            filtered_dates_for_initial_date_input = [date for date in datasets if date <= initial_date_str]
-        # print("DFFII", filtered_dates_for_initial_date_input)
-            st.markdown("<h4 style=' text-decoration: underline;'>Select an Inital Date:</h4>", unsafe_allow_html=True) 
-            date_initial = datetime.strptime(st.selectbox("Choose a date from the dropdown below:",filtered_dates_for_initial_date_input, index=filtered_dates_for_initial_date_input.index(initial_date_str) if initial_date_str in filtered_dates_for_initial_date_input else 0), "%Y-%m-%d")
+            st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
             
+            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
+            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
+            
+            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+            date_initial = datetime.combine(date_initial, datetime.min.time())
+
         with date_final:
-            filtered_dates_for_final_date_input = [date for date in datasets if date > date_initial.strftime("%Y-%m-%d")]
-        #  print("FDFFI", filtered_dates_for_final_date_input) 
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            date_final = datetime.strptime(st.selectbox("Choose a final date from the dropdown below:",[date for date in filtered_dates_for_final_date_input]), "%Y-%m-%d")
+            
+            # Ensure we have valid dates after date_initial
+            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
+            
+            if filtered_dates_for_final_date_input:
+                min_final_date = min(filtered_dates_for_final_date_input)
+                max_final_date = max(filtered_dates_for_final_date_input)
+            else:
+                min_final_date = date_initial  # Fallback to initial date if no valid final dates
+                max_final_date = date_initial
+
+            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            date_final = datetime.combine(date_final, datetime.min.time())
+            
         
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Company:</h4>", unsafe_allow_html=True)
@@ -1096,8 +1145,37 @@ def main():
     # Columns, Titles and dataset selectbox
     st.write('<h2 style="text-align: center; text-decoration: underline;">Daily Live Analysis</h2>', unsafe_allow_html=True)
     st.markdown("<h3 style='text-decoration: underline;'>Select a Specific Date</h3>", unsafe_allow_html=True)
-    selected_dataset = st.selectbox("Choose a Date:", datasets)
+
+    # Assuming `unorganised_datasets` contains filenames like "2023-03-12_historical_data.pkl"
+    datasets2 = [
+        filename for filename in unorganised_datasets
+        if re.match(r'^\d', filename) and 'historical' not in filename.lower()
+    ]
+
+    # Extracting the date from filenames (assuming the date is at the beginning of the filename)
+    # If the filenames have a date like "2023-03-12" in the beginning of the filename
+    datasets2 = [
+        re.match(r'(\d{4}-\d{2}-\d{2})', filename).group(1)  # Extract date from the filename
+        for filename in datasets2 if re.match(r'(\d{4}-\d{2}-\d{2})', filename)
+    ]
+
+    # Convert the extracted dates to datetime objects
+    dates = [datetime.strptime(date_str, "%Y-%m-%d").date() for date_str in datasets2]
+
+    # Sort the dates in descending order to get the latest date first
+    dates.sort(reverse=True)
+
+    # Use date_input to allow the user to choose a date from the sorted list
+    # Add a default value (e.g., the most recent date) for the date_input
+    selected_date = st.date_input("Choose a Date:", value=dates[0], min_value=dates[-1], max_value=dates[0])
+
+    # To get the corresponding dataset file for the selected date, you can match it back
+    selected_dataset  = datasets2[dates.index(selected_date)]
+        
+    
     general_data_col, company_col, harm_col = st.columns(3)
+
+
     
     ####################################################
 
