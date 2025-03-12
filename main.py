@@ -183,7 +183,7 @@ def main():
 
 ##############################################################################################################  --- Historical Analysis --- ##################################################################################################################
 
-    with st.expander("Harm definition's according to the DSA documentation", expanded=False):
+    with st.expander("Harm sub-categories according to the DSA documentation", expanded=False):
     
         question = st.selectbox(
             "Select a Harm",
