@@ -251,68 +251,75 @@ def main():
     if selected_option == "Evaluate two companies for the same harm category":
         second_harm_selected = None
         #st.write("You selected 'Company'.")
+        
+        date_initial, date_final, company_intial, second_company, harm_intial = st.columns(5)
 
-
-        date_initial, date_final, company_intial,  second_company, harm_intial = st.columns(5)
+        dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+        dataset_dates.sort()  # Ensure dates are in order
 
         with date_initial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
-            
-            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
-            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
-            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
-            
-            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+
+            initial_date = datetime.strptime(initial_date_str, "%Y-%m-%d")
+            filtered_dates = [date for date in dataset_dates if date <= initial_date]
+
+            if filtered_dates:
+                min_date = min(filtered_dates)
+                max_date = max(filtered_dates)
+                #default_date = initial_date if initial_date in filtered_dates else min_date
+                default_date = initial_date if initial_date in filtered_dates else (max_date - timedelta(weeks=2))
+            else:
+                min_date = min(dataset_dates)
+                max_date = max(dataset_dates)
+                default_date = max_date
+
+            date_initial = st.date_input(
+                "Choose an initial date:",
+                value=default_date.date(),
+                min_value=min_date.date(),
+                max_value=max_date.date()
+            )
             date_initial = datetime.combine(date_initial, datetime.min.time())
 
         with date_final:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            
-            # Ensure we have valid dates after date_initial
-            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
-            
-            if filtered_dates_for_final_date_input:
-                min_final_date = min(filtered_dates_for_final_date_input)
-                max_final_date = max(filtered_dates_for_final_date_input)
+
+            filtered_dates_final = [date for date in dataset_dates if date > date_initial]
+
+            if filtered_dates_final:
+                min_final_date = min(filtered_dates_final)
+                max_final_date = max(filtered_dates_final)
+                default_final_date = max_final_date
             else:
-                min_final_date = date_initial  # Fallback to initial date if no valid final dates
+                min_final_date = date_initial
                 max_final_date = date_initial
+                default_final_date = date_initial
 
-            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            date_final = st.date_input(
+                "Choose a final date:",
+                value=default_final_date.date(),
+                min_value=min_final_date.date(),
+                max_value=max_final_date.date()
+            )
             date_final = datetime.combine(date_final, datetime.min.time())
-            
 
-
-
-
-                
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select Company 01:</h4>", unsafe_allow_html=True)
-            company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
-
+            company_selected = st.selectbox("Choose a Company from the dropdown below:", list_of_companies)
 
         with second_company:
             st.markdown("<h4 style=' text-decoration: underline;'>Select Company 02:</h4>", unsafe_allow_html=True)
-            second_company_selected = st.selectbox("Choose a second Company for comparison:",list_of_companies, index=2)
+            second_company_selected = st.selectbox("Choose a second Company for comparison:", list_of_companies, index=2)
 
         with harm_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Specific Harm:</h4>", unsafe_allow_html=True)
 
-           # Create a cleaned version of the harm list (remove prefix and underscores)
+            # Create a cleaned version of the harm list (remove prefix and underscores)
             Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
-            # Create a mapping dictionary to match selections back to the original list
             harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
-            # Streamlit selectbox with cleaned harm names
+
             harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
-            # Map back to the original harm category
             harm_selected = harm_mapping[harm_selected_cleaned]
-            # Display the selected values for debugging or confirmation
-            #print(f"Selected (Cleaned): {harm_selected_cleaned}")
-           # print(f"Mapped to Original: {harm_selected}")
-
-
-
-           # harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
 
 
 
@@ -320,131 +327,150 @@ def main():
     elif selected_option == "Evaluate two harm categories for the company":
         second_company_selected = None
         #st.write("You selected 'Harm'.")
-        date_initial, date_final, company_intial, harm_intial, second_harm = st.columns(5)
+        date_initial_col, date_final_col, company_intial, harm_intial, second_harm = st.columns(5)
 
+        dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+        dataset_dates.sort()  # Ensure dates are in order
 
-        with date_initial:
+        with date_initial_col:
             st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
-            
-            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
-            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
-            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
-            
-            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+
+            initial_date = datetime.strptime(initial_date_str, "%Y-%m-%d")
+            filtered_dates = [date for date in dataset_dates if date <= initial_date]
+
+            if filtered_dates:
+                min_date = min(filtered_dates)
+                max_date = max(filtered_dates)
+                #default_date = initial_date if initial_date in filtered_dates else min_date
+                default_date = initial_date if initial_date in filtered_dates else (max_date - timedelta(weeks=2))
+            else:
+                min_date = min(dataset_dates)
+                max_date = max(dataset_dates)
+                default_date = max_date
+
+            date_initial = st.date_input(
+                "Choose an initial date:",
+                value=default_date.date(),
+                min_value=min_date.date(),
+                max_value=max_date.date()
+            )
             date_initial = datetime.combine(date_initial, datetime.min.time())
 
-        with date_final:
+        with date_final_col:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            
-            # Ensure we have valid dates after date_initial
-            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
-            
-            if filtered_dates_for_final_date_input:
-                min_final_date = min(filtered_dates_for_final_date_input)
-                max_final_date = max(filtered_dates_for_final_date_input)
-            else:
-                min_final_date = date_initial  # Fallback to initial date if no valid final dates
-                max_final_date = date_initial
 
-            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            filtered_dates_final = [date for date in dataset_dates if date > date_initial]
+
+            if filtered_dates_final:
+                min_final_date = min(filtered_dates_final)
+                max_final_date = max(filtered_dates_final)
+                default_final_date = max_final_date
+            else:
+                min_final_date = date_initial
+                max_final_date = date_initial
+                default_final_date = date_initial
+
+            date_final = st.date_input(
+                "Choose a final date:",
+                value=default_final_date.date(),
+                min_value=min_final_date.date(),
+                max_value=max_final_date.date()
+            )
             date_final = datetime.combine(date_final, datetime.min.time())
-            
-        
+
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Company:</h4>", unsafe_allow_html=True)
-            company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
+            company_selected = st.selectbox("Choose a Company from the dropdown below:", list_of_companies)
 
         with harm_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select Harm 01:</h4>", unsafe_allow_html=True)
 
             # Create a cleaned version of the harm list (remove prefix and underscores)
             Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
-            # Create a mapping dictionary to match selections back to the original list
             harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
-            # Streamlit selectbox with cleaned harm names
-            harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
-            # Map back to the original harm category
-            harm_selected = harm_mapping[harm_selected_cleaned]
-            # Display the selected values for debugging or confirmation
-            #print(f"Selected (Cleaned): {harm_selected_cleaned}")
-           # print(f"Mapped to Original: {harm_selected}")
 
-            #harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
+            harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
+            harm_selected = harm_mapping[harm_selected_cleaned]
 
         with second_harm:
             st.markdown("<h4 style=' text-decoration: underline;'>Select Harm 02:</h4>", unsafe_allow_html=True)
 
-
             # Create a cleaned version of the harm list (remove prefix and underscores)
             Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
-            # Create a mapping dictionary to match selections back to the original list
             harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
-            # Streamlit selectbox with cleaned harm names
-            harm_selected_cleaned = st.selectbox("Choose a second Harm from the dropdown below:", Cleaned_harms,index=2)
-            # Map back to the original harm category
+
+            harm_selected_cleaned = st.selectbox("Choose a second Harm from the dropdown below:", Cleaned_harms, index=2)
             second_harm_selected = harm_mapping[harm_selected_cleaned]
-            # Display the selected values for debugging or confirmation
-           # print(f"Selected (Cleaned): {harm_selected_cleaned}")
-           # print(f"Mapped to Original: {second_harm_selected}")
-
-
-           # second_harm_selected = st.selectbox("Choose a second Harm for comparison:",list_of_harms,index=2)
 
         
     else:
+        print("#####################################################################################################################################################################")
         second_company_selected = None
         second_harm_selected = None
-        date_initial, date_final, company_intial, harm_intial = st.columns(4)
+        date_initial_col, date_final_col, company_intial, harm_intial = st.columns(4)
 
-        with date_initial:
+        dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
+        dataset_dates.sort()  # Ensure dates are in order
+
+        with date_initial_col:
             st.markdown("<h4 style=' text-decoration: underline;'>Select an Initial Date:</h4>", unsafe_allow_html=True)
             
-            dataset_dates = [datetime.strptime(date, "%Y-%m-%d") for date in datasets]
-            filtered_dates_for_initial_date_input = [date for date in dataset_dates if date <= datetime.strptime(initial_date_str, "%Y-%m-%d")]
-            default_date = datetime.strptime(initial_date_str, "%Y-%m-%d") if filtered_dates_for_initial_date_input else dataset_dates[0]
-            
-            date_initial = st.date_input("Choose an initial date:", value=default_date, min_value=min(filtered_dates_for_initial_date_input), max_value=max(filtered_dates_for_initial_date_input))
+            initial_date = datetime.strptime(initial_date_str, "%Y-%m-%d")
+            filtered_dates = [date for date in dataset_dates if date <= initial_date]
+
+            if filtered_dates:
+                min_date = min(filtered_dates)
+                max_date = max(filtered_dates)
+                #default_date = initial_date if initial_date in filtered_dates else min_date
+                default_date = initial_date if initial_date in filtered_dates else (max_date - timedelta(weeks=2))
+            else:
+                min_date = min(dataset_dates)
+                max_date = max(dataset_dates)
+                default_date = max_date
+
+            date_initial = st.date_input(
+                "Choose an initial date:",
+                value=default_date.date(),
+                min_value=min_date.date(),
+                max_value=max_date.date()
+            )
             date_initial = datetime.combine(date_initial, datetime.min.time())
 
-        with date_final:
+        with date_final_col:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Final Date:</h4>", unsafe_allow_html=True)
-            
-            # Ensure we have valid dates after date_initial
-            filtered_dates_for_final_date_input = [date for date in dataset_dates if date > date_initial]
-            
-            if filtered_dates_for_final_date_input:
-                min_final_date = min(filtered_dates_for_final_date_input)
-                max_final_date = max(filtered_dates_for_final_date_input)
-            else:
-                min_final_date = date_initial  # Fallback to initial date if no valid final dates
-                max_final_date = date_initial
 
-            date_final = st.date_input("Choose a final date:", value=max_final_date, min_value=min_final_date, max_value=max_final_date)
+            filtered_dates_final = [date for date in dataset_dates if date > date_initial]
+
+            if filtered_dates_final:
+                min_final_date = min(filtered_dates_final)
+                max_final_date = max(filtered_dates_final)
+                default_final_date = max_final_date
+            else:
+                min_final_date = date_initial
+                max_final_date = date_initial
+                default_final_date = date_initial
+
+            date_final = st.date_input(
+                "Choose a final date:",
+                value=default_final_date.date(),
+                min_value=min_final_date.date(),
+                max_value=max_final_date.date()
+            )
             date_final = datetime.combine(date_final, datetime.min.time())
-            
-        
+
         with company_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Company:</h4>", unsafe_allow_html=True)
-            company_selected = st.selectbox("Choose a Company from the dropdown below:",list_of_companies)  
+            company_selected = st.selectbox("Choose a Company from the dropdown below:", list_of_companies)
 
         with harm_intial:
             st.markdown("<h4 style=' text-decoration: underline;'>Select a Specific Harm:</h4>", unsafe_allow_html=True)
 
             # Create a cleaned version of the harm list (remove prefix and underscores)
             Cleaned_harms = [harm.replace("STATEMENT_CATEGORY_", "").replace("_", " ") for harm in list_of_harms]
-            # Create a mapping dictionary to match selections back to the original list
             harm_mapping = {cleaned: original for cleaned, original in zip(Cleaned_harms, list_of_harms)}
-            # Streamlit selectbox with cleaned harm names
+
             harm_selected_cleaned = st.selectbox("Choose a Harm from the dropdown below:", Cleaned_harms)
-            # Map back to the original harm category
             harm_selected = harm_mapping[harm_selected_cleaned]
-            # Display the selected values for debugging or confirmation
-           # print(f"Selected (Cleaned): {harm_selected_cleaned}")
-           # print(f"Mapped to Original: {harm_selected}")
-
-            
-            #harm_selected = st.selectbox("Choose a Harm from the dropdown below:",list_of_harms)
-
         
 
 
